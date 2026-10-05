@@ -3,11 +3,11 @@
 // (window.Chem) and in Node (require) so it can be unit-tested.
 (function (root, factory) {
   if (typeof module !== 'undefined' && module.exports) {
-    module.exports = factory(require('./data/elements.js'), require('./data/compounds.js'));
+    module.exports = factory(require('./data/elements.js'), require('./data/compounds.js'), require('./data/names-fr.js'));
   } else {
-    root.Chem = factory(root.ELEMENTS, root.COMPOUNDS);
+    root.Chem = factory(root.ELEMENTS, root.COMPOUNDS, root.NAMES_FR);
   }
-})(this, function (ELEMENTS, COMPOUNDS) {
+})(this, function (ELEMENTS, COMPOUNDS, NAMES_FR) {
   'use strict';
 
   var bySymbol = {};
@@ -41,20 +41,20 @@
   // student-friendly message.
   function parseFormula(input) {
     var text = String(input || '').replace(/\s+/g, '');
-    if (!text) throw new Error('Type a formula, e.g. H2O or Ca(OH)2.');
+    if (!text) throw new Error(msg('empty'));
     text = normalizeSubscripts(text);
 
     var parts = text.split(/[·•*.]/);
     var counts = {};
     var order = [];
     parts.forEach(function (part, idx) {
-      if (!part) throw new Error('Unexpected "·" in formula.');
+      if (!part) throw new Error(msg('unexpected', { c: '·' }));
       var m = /^(\d+)(.*)$/.exec(part);
       var mult = 1;
       if (m && idx > 0) { mult = parseInt(m[1], 10); part = m[2]; }
-      else if (m) throw new Error('A formula cannot start with a number (use coefficients only in equations).');
+      else if (m) throw new Error(msg('startsNumber'));
       var res = parseGroup(part, 0, null);
-      if (res.pos !== part.length) throw new Error('Unexpected "' + part[res.pos] + '" in formula.');
+      if (res.pos !== part.length) throw new Error(msg('unexpected', { c: part[res.pos] }));
       Object.keys(res.counts).forEach(function (el) { add(counts, order, el, res.counts[el] * mult); });
       res.order.forEach(function (el) { if (order.indexOf(el) < 0) order.push(el); });
     });
@@ -87,7 +87,7 @@
         inner.order.forEach(function (el) { add(counts, order, el, inner.counts[el] * n.value); });
         pos = n.pos;
       } else if (c === ')' || c === ']') {
-        if (c !== closer) throw new Error('Unmatched "' + c + '" in formula.');
+        if (c !== closer) throw new Error(msg('unmatched', { c: c }));
         return { counts: counts, order: order, pos: pos + 1 };
       } else if (/[A-Z]/.test(c)) {
         var sym = c;
@@ -95,18 +95,18 @@
           sym += s[pos + 1];
         }
         if (!bySymbol[sym] && sym.length === 2 && bySymbol[c]) sym = c;
-        if (!bySymbol[sym]) throw new Error('"' + sym + '" is not an element symbol.');
+        if (!bySymbol[sym]) throw new Error(msg('notElement', { s: sym }));
         var k = readNumber(s, pos + sym.length);
-        if (k.value === 0) throw new Error('Subscripts must be at least 1.');
+        if (k.value === 0) throw new Error(msg('subscriptZero'));
         add(counts, order, sym, k.value);
         pos = k.pos;
       } else if (/[a-z]/.test(c)) {
-        throw new Error('Element symbols start with a capital letter ("' + c.toUpperCase() + '", not "' + c + '").');
+        throw new Error(msg('lowercase', { u: c.toUpperCase(), l: c }));
       } else {
-        throw new Error('Unexpected "' + c + '" in formula.');
+        throw new Error(msg('unexpected', { c: c }));
       }
     }
-    if (closer) throw new Error('Missing "' + closer + '" in formula.');
+    if (closer) throw new Error(msg('missing', { c: closer }));
     return { counts: counts, order: order, pos: pos };
   }
 
@@ -169,13 +169,13 @@
   // Splits "2H2 + O2 -> 2H2O" into sides. Leading coefficients are ignored.
   function parseEquation(text) {
     var sides = String(text).split(/=+>|-+>|→|⟶|=/);
-    if (sides.length !== 2) throw new Error('Write the equation as reactants -> products, e.g. H2 + O2 -> H2O.');
+    if (sides.length !== 2) throw new Error(msg('eqFormat'));
     function side(s) {
       return s.split('+').map(function (t) { return t.trim().replace(/^\d+\s*/, ''); })
         .filter(function (t) { return t.length; });
     }
     var r = side(sides[0]); var p = side(sides[1]);
-    if (!r.length || !p.length) throw new Error('Both sides of the equation need at least one substance.');
+    if (!r.length || !p.length) throw new Error(msg('eqSides'));
     return { reactants: r, products: p };
   }
 
@@ -192,7 +192,7 @@
     });
     elements.forEach(function (el) {
       if (!reactEls[el] || !prodEls[el]) {
-        throw new Error(bySymbol[el].name + ' (' + el + ') appears on only one side — atoms cannot appear or disappear in a reaction.');
+        throw new Error(msg('oneSide', { name: elName(bySymbol[el]), s: el }));
       }
     });
 
@@ -224,8 +224,8 @@
 
     var free = [];
     for (c = 0; c < cols; c++) if (pivotCols.indexOf(c) < 0) free.push(c);
-    if (free.length === 0) throw new Error('This equation cannot be balanced — check the formulas.');
-    if (free.length > 1) throw new Error('This equation can be balanced in more than one way — it is probably two reactions combined.');
+    if (free.length === 0) throw new Error(msg('cannotBalance'));
+    if (free.length > 1) throw new Error(msg('multiWays'));
 
     var fc = free[0];
     var sol = [];
@@ -239,7 +239,7 @@
     ints = ints.map(function (x) { return x / g; });
     if (ints[0] < 0) ints = ints.map(function (x) { return -x; });
     if (ints.some(function (x) { return x <= 0; })) {
-      throw new Error('No positive set of coefficients balances this — a substance may be on the wrong side.');
+      throw new Error(msg('noPositive'));
     }
     return {
       reactants: reactants.map(function (f, i) { return { formula: f, coef: ints[i] }; }),
@@ -272,6 +272,101 @@
     return { left: tally(b.reactants), right: tally(b.products) };
   }
 
+
+  // ---------- Language ----------
+
+  var lang = 'en';
+  function setLang(l) { lang = l === 'fr' ? 'fr' : 'en'; }
+  function L(explicit) { return explicit || lang; }
+
+  var MSG = {
+    en: {
+      empty: 'Type a formula, e.g. H2O or Ca(OH)2.',
+      unexpected: 'Unexpected "{c}" in formula.',
+      startsNumber: 'A formula cannot start with a number (use coefficients only in equations).',
+      unmatched: 'Unmatched "{c}" in formula.',
+      notElement: '"{s}" is not an element symbol.',
+      subscriptZero: 'Subscripts must be at least 1.',
+      lowercase: 'Element symbols start with a capital letter ("{u}", not "{l}").',
+      missing: 'Missing "{c}" in formula.',
+      eqFormat: 'Write the equation as reactants -> products, e.g. H2 + O2 -> H2O.',
+      eqSides: 'Both sides of the equation need at least one substance.',
+      oneSide: '{name} ({s}) appears on only one side. Atoms cannot appear or disappear in a reaction.',
+      cannotBalance: 'This equation cannot be balanced. Check the formulas.',
+      multiWays: 'This equation can be balanced in more than one way. It is probably two reactions combined.',
+      noPositive: 'No positive set of coefficients balances this. A substance may be on the wrong side.',
+      hydrate: 'The "·{n}H2O" part means water molecules are trapped in the crystal ({n} per formula unit) → add "{word}".',
+      known: '{f} is a well-known compound with a common name{note}.',
+      element: 'Only one kind of atom → this is the element {name}.',
+      diatomic: '{name} exists as diatomic molecules ({s}2).',
+      alkane1: 'Only C and H with H = 2×C + 2 → an alkane (single bonds only).',
+      alkane2: '{n} carbon atom(s) → prefix "{p}-" + "-ane".',
+      cov1: 'Both {a} and {b} are nonmetals → a molecular (covalent) compound; use Greek prefixes.',
+      cov2: '{n} {s} → "{word}"{note}.',
+      cov2note: ' (no "mono" on the first element)',
+      cov3: '{n} {s} → "{word}" (the second element ends in -ide).',
+      ion1: '{cat} is {kind}; {an} is {anKind} (charge {q}−).',
+      kindNH4: 'the polyatomic ion ammonium',
+      kindVar: 'a metal that can form more than one ion',
+      kindFixed: 'a metal with only one common charge',
+      anPoly: 'the polyatomic ion {name}',
+      anMono: 'a nonmetal → the "-ide" ion {name}',
+      ion2: 'Total negative charge: {na} × {q}− = {tot}−. Spread over {nc} {cat} → each is {c}+, so write the Roman numeral ({r}).',
+      ion3: 'Name the cation first, then the anion: {name}.',
+      unknown: 'This compound is outside the naming rules this app knows (it may be organic or a complex ion).'
+    },
+    fr: {
+      empty: 'Tape une formule, par ex. H2O ou Ca(OH)2.',
+      unexpected: 'Caractère « {c} » inattendu dans la formule.',
+      startsNumber: 'Une formule ne peut pas commencer par un nombre (les coefficients vont seulement dans les équations).',
+      unmatched: '« {c} » sans parenthèse ouvrante dans la formule.',
+      notElement: '« {s} » n’est pas un symbole d’élément.',
+      subscriptZero: 'Les indices doivent valoir au moins 1.',
+      lowercase: 'Les symboles commencent par une majuscule (« {u} », pas « {l} »).',
+      missing: 'Il manque « {c} » dans la formule.',
+      eqFormat: 'Écris l’équation sous la forme réactifs -> produits, par ex. H2 + O2 -> H2O.',
+      eqSides: 'Chaque côté de l’équation doit contenir au moins une espèce.',
+      oneSide: '{name} ({s}) n’apparaît que d’un côté. Les atomes ne peuvent ni apparaître ni disparaître.',
+      cannotBalance: 'Cette équation ne peut pas être équilibrée. Vérifie les formules.',
+      multiWays: 'Cette équation peut être équilibrée de plusieurs façons. Ce sont sans doute deux réactions combinées.',
+      noPositive: 'Aucun jeu de coefficients positifs ne l’équilibre. Une espèce est peut-être du mauvais côté.',
+      hydrate: 'La partie « ·{n}H2O » signifie que des molécules d’eau sont piégées dans le cristal ({n} par unité) → ajouter « {word} ».',
+      known: '{f} est un composé connu qui porte un nom usuel{note}.',
+      element: 'Un seul type d’atome → c’est l’élément {name}.',
+      diatomic: '{name} existe sous forme de molécules diatomiques ({s}2).',
+      alkane1: 'Seulement C et H avec H = 2×C + 2 → un alcane (liaisons simples uniquement).',
+      alkane2: '{n} atome(s) de carbone → préfixe « {p}- » + « -ane ».',
+      cov1: '{a} et {b} sont des non-métaux → composé moléculaire (covalent) ; on utilise les préfixes grecs.',
+      cov2: '{n} {s} → « {word} »{note}.',
+      cov2note: ' (pas de préfixe « mono »)',
+      cov3: '{n} {s} → « {word} » (l’élément le plus électronégatif est nommé en premier, avec la terminaison -ure ou « oxyde »).',
+      ion1: '{cat} est {kind} ; {an} est {anKind} (charge {q}−).',
+      kindNH4: 'l’ion polyatomique ammonium',
+      kindVar: 'un métal qui peut former plusieurs ions',
+      kindFixed: 'un métal qui n’a qu’une seule charge courante',
+      anPoly: 'l’ion polyatomique {name}',
+      anMono: 'un non-métal → l’ion « -ure » {name}',
+      ion2: 'Charge négative totale : {na} × {q}− = {tot}−. Répartie sur {nc} {cat} → chacun vaut {c}+, on écrit donc le chiffre romain ({r}).',
+      ion3: 'En français, on nomme d’abord l’anion, puis le cation : {name}.',
+      unknown: 'Ce composé dépasse les règles de nomenclature de l’application (il est peut-être organique ou un ion complexe).'
+    }
+  };
+
+  function msg(key, vars, explicit) {
+    var table = MSG[L(explicit)];
+    var s = table[key] !== undefined ? table[key] : MSG.en[key];
+    return s.replace(/\{(\w+)\}/g, function (m, k) { return vars && vars[k] !== undefined ? vars[k] : m; });
+  }
+
+  function elName(el, explicit) {
+    return L(explicit) === 'fr' && NAMES_FR && NAMES_FR.elements[el.number - 1] || el.name;
+  }
+
+  function lower(s) { return s.charAt(0).toLowerCase() + s.slice(1); }
+
+  // French "de" with elision: de sodium, d'aluminium, d'hydrogène.
+  function de(word) { return /^[aeéèêiïoôuyh]/i.test(word) ? 'd’' + word : 'de ' + word; }
+
   // ---------- Ions & ionic formulas ----------
 
   var CATIONS = COMPOUNDS.cations;
@@ -290,7 +385,15 @@
     return { formula: part(cation, nc) + part(anion, na), cationCount: nc, anionCount: na };
   }
 
-  function ionicName(cation, anion) { return cation.name + ' ' + anion.name; }
+  function ionName(ion, explicit) {
+    if (L(explicit) !== 'fr') return ion.name;
+    return ion.name_fr || (NAMES_FR && NAMES_FR.ions && NAMES_FR.ions[ion.name]) || ion.name;
+  }
+
+  function ionicName(cation, anion, explicit) {
+    if (L(explicit) === 'fr') return ionName(anion, 'fr') + ' ' + de(ionName(cation, 'fr'));
+    return cation.name + ' ' + anion.name;
+  }
 
   function sameCounts(a, b) {
     var ka = Object.keys(a); var kb = Object.keys(b);
@@ -301,6 +404,7 @@
   // ---------- Naming ----------
 
   var PREFIXES = ['', 'mono', 'di', 'tri', 'tetra', 'penta', 'hexa', 'hepta', 'octa', 'nona', 'deca'];
+  var PREFIXES_FR = ['', 'mono', 'di', 'tri', 'tétra', 'penta', 'hexa', 'hepta', 'octa', 'nona', 'déca'];
   var ROMAN = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
 
   var IDE = {
@@ -309,14 +413,31 @@
     Se: 'selenide', Br: 'bromide', Te: 'telluride', I: 'iodide', At: 'astatide'
   };
 
-  function lower(s) { return s.charAt(0).toLowerCase() + s.slice(1); }
-
   function prefixed(n, word, isFirst) {
     if (isFirst && n === 1) return word;
     var p = PREFIXES[n] || (n + '-');
     // Drop the final vowel of the prefix before "oxide" (monoxide, pentoxide).
     if (/^o/.test(word) && /[ao]$/.test(p)) p = p.slice(0, -1);
     return p + word;
+  }
+
+  // Name of a two-nonmetal compound from its formula, e.g. N2O4.
+  function covalentName(formula, explicit) {
+    var p = parseFormula(formula);
+    var a = bySymbol[p.order[0]], b = bySymbol[p.order[1]];
+    var na = p.counts[a.symbol], nb = p.counts[b.symbol];
+    if (L(explicit) === 'fr') {
+      var anion = NAMES_FR.ide[b.symbol] || lower(elName(b, 'fr')) + 'ure';
+      var first = nb === 1 ? (anion === 'oxyde' ? 'monoxyde' : anion) : PREFIXES_FR[nb] + anion;
+      var second = (na === 1 ? '' : PREFIXES_FR[na]) + lower(elName(a, 'fr'));
+      return first + ' ' + de(second);
+    }
+    return prefixed(na, lower(a.name), true) + ' ' + prefixed(nb, IDE[b.symbol] || lower(b.name) + 'ide', false);
+  }
+
+  function knownName(k, explicit) {
+    if (L(explicit) !== 'fr') return k.name;
+    return k.name_fr || (NAMES_FR && NAMES_FR.known && NAMES_FR.known[k.formula]) || k.name;
   }
 
   function findKnown(counts) {
@@ -328,17 +449,19 @@
     return null;
   }
 
-  function alkaneName(counts) {
-    var names = ['', 'methane', 'ethane', 'propane', 'butane', 'pentane', 'hexane', 'heptane', 'octane', 'nonane', 'decane'];
+  function alkaneName(counts, explicit) {
     var keys = Object.keys(counts);
     if (keys.length !== 2 || !counts.C || !counts.H) return null;
+    var names = L(explicit) === 'fr' ? NAMES_FR.alkanes : ['', 'methane', 'ethane', 'propane', 'butane', 'pentane', 'hexane', 'heptane', 'octane', 'nonane', 'decane'];
     if (counts.H === 2 * counts.C + 2 && names[counts.C]) return names[counts.C];
     return null;
   }
 
-  // Names a compound from its formula. Returns
+  // Names a compound from its formula in the current language. Returns
   // { name, type, steps: [explanations] } or { name: null, ... } if unknown.
-  function nameCompound(formula) {
+  function nameCompound(formula, explicit) {
+    var lg = L(explicit);
+    var fr = lg === 'fr';
     var text = normalizeSubscripts(String(formula).replace(/\s+/g, ''));
     var parsed = parseFormula(text);
     var counts = parsed.counts;
@@ -348,38 +471,42 @@
     var hyd = /^(.+?)[·•*.](\d*)H2O$/.exec(text);
     if (hyd) {
       var n = hyd[2] ? parseInt(hyd[2], 10) : 1;
-      var base = nameCompound(hyd[1]);
+      var base = nameCompound(hyd[1], lg);
       if (base.name) {
-        var hydName = base.name + ' ' + (PREFIXES[n] || n + '-') + 'hydrate';
+        var word = fr ? (PREFIXES_FR[n] || n + '-') + 'hydraté' : (PREFIXES[n] || n + '-') + 'hydrate';
         return {
-          name: hydName, type: 'hydrate',
-          steps: base.steps.concat(['The "·' + n + 'H2O" means ' + n + ' water molecule' + (n > 1 ? 's are' : ' is') +
-            ' trapped in the crystal → add "' + (PREFIXES[n] || n + '-') + 'hydrate".'])
+          name: base.name + ' ' + word, type: 'hydrate',
+          steps: base.steps.concat([msg('hydrate', { n: n, word: word }, lg)])
         };
       }
     }
 
     var known = findKnown(counts);
     if (known) {
-      steps.push(known.formula + ' is a well-known compound with a common name' + (known.note ? ': ' + known.note : '.'));
-      return { name: known.name, type: known.type || 'common', steps: steps, systematic: known.systematic };
+      var note = fr ? known.note_fr : known.note;
+      steps.push(msg('known', { f: known.formula, note: note ? (fr ? ' : ' : ': ') + note : '' }, lg));
+      return {
+        name: knownName(known, lg), type: known.type || 'common', steps: steps,
+        systematic: fr ? known.systematic_fr || known.systematic : known.systematic
+      };
     }
 
     // Pure elements
     if (parsed.order.length === 1) {
       var el = bySymbol[parsed.order[0]];
       var cnt = counts[el.symbol];
-      steps.push('Only one kind of atom → this is the element ' + el.name.toLowerCase() + '.');
+      var nm = lower(elName(el, lg));
+      steps.push(msg('element', { name: nm }, lg));
       if (cnt === 2 && ['H', 'N', 'O', 'F', 'Cl', 'Br', 'I'].indexOf(el.symbol) >= 0) {
-        steps.push(el.name + ' exists as diatomic molecules (' + el.symbol + '2).');
+        steps.push(msg('diatomic', { name: elName(el, lg), s: el.symbol }, lg));
       }
-      return { name: lower(el.name) + (cnt === 3 && el.symbol === 'O' ? ' (ozone)' : ''), type: 'element', steps: steps };
+      return { name: nm + (cnt === 3 && el.symbol === 'O' ? ' (ozone)' : ''), type: 'element', steps: steps };
     }
 
-    var alk = alkaneName(counts);
+    var alk = alkaneName(counts, lg);
     if (alk) {
-      steps.push('Only C and H with H = 2×C + 2 → an alkane (single bonds only).');
-      steps.push(counts.C + ' carbon atom' + (counts.C > 1 ? 's' : '') + ' → prefix "' + alk.replace(/ane$/, '') + '-" + "-ane".');
+      steps.push(msg('alkane1', null, lg));
+      steps.push(msg('alkane2', { n: counts.C, p: alk.replace(/ane$/, '') }, lg));
       return { name: alk, type: 'organic', steps: steps };
     }
 
@@ -397,46 +524,49 @@
     }
     if (match) {
       return {
-        name: ionicName(match.cation, match.anion), type: 'ionic',
-        steps: ionicSteps(match.cation, match.anion, match.f), cation: match.cation, anion: match.anion
+        name: ionicName(match.cation, match.anion, lg), type: 'ionic',
+        steps: ionicSteps(match.cation, match.anion, match.f, lg), cation: match.cation, anion: match.anion
       };
     }
 
     // Binary covalent (two nonmetals)
     if (parsed.order.length === 2 && parsed.order.every(isNonmetal)) {
       var a = bySymbol[parsed.order[0]]; var b = bySymbol[parsed.order[1]];
-      var first = prefixed(counts[a.symbol], lower(a.name), true);
-      var second = prefixed(counts[b.symbol], IDE[b.symbol] || lower(b.name) + 'ide', false);
-      steps.push('Both ' + a.name + ' and ' + b.name + ' are nonmetals → a molecular (covalent) compound; use Greek prefixes.');
-      steps.push(counts[a.symbol] + ' ' + a.symbol + ' → "' + first + '"' + (counts[a.symbol] === 1 ? ' (no "mono" on the first element)' : '') + '.');
-      steps.push(counts[b.symbol] + ' ' + b.symbol + ' → "' + second + '" (the second element ends in -ide).');
-      return { name: first + ' ' + second, type: 'covalent', steps: steps };
+      var name = covalentName(text, lg);
+      var parts = fr ? name.split(/ d[e’] ?/) : name.split(' ');
+      steps.push(msg('cov1', { a: elName(a, lg), b: elName(b, lg) }, lg));
+      if (fr) {
+        steps.push(msg('cov3', { n: counts[b.symbol], s: b.symbol, word: parts[0] }, lg));
+        steps.push(msg('cov2', { n: counts[a.symbol], s: a.symbol, word: parts[1], note: counts[a.symbol] === 1 ? msg('cov2note', null, lg) : '' }, lg));
+      } else {
+        steps.push(msg('cov2', { n: counts[a.symbol], s: a.symbol, word: parts[0], note: counts[a.symbol] === 1 ? msg('cov2note', null, lg) : '' }, lg));
+        steps.push(msg('cov3', { n: counts[b.symbol], s: b.symbol, word: parts[1] }, lg));
+      }
+      return { name: name, type: 'covalent', steps: steps };
     }
 
-    return {
-      name: null, type: 'unknown',
-      steps: ['This compound is outside the naming rules this app knows (it may be organic or a complex ion).']
-    };
+    return { name: null, type: 'unknown', steps: [msg('unknown', null, lg)] };
   }
 
-  function ionicSteps(cat, an, f) {
+  function ionicSteps(cat, an, f, lg) {
     var steps = [];
-    var catKind = cat.formula === 'NH4' ? 'the polyatomic ion ammonium' :
-      (cat.variable ? 'a metal that can form more than one ion' : 'a metal with only one common charge');
-    steps.push(cat.formula + ' is ' + catKind + '; ' + an.formula + ' is ' +
-      (isPolyatomic(an) ? 'the polyatomic ion ' + an.name : 'a nonmetal → the "-ide" ion ' + an.name) + ' (charge ' + an.charge + '−).');
+    var kind = cat.formula === 'NH4' ? msg('kindNH4', null, lg) : msg(cat.variable ? 'kindVar' : 'kindFixed', null, lg);
+    var anKind = msg(an.poly ? 'anPoly' : 'anMono', { name: ionName(an, lg) }, lg);
+    steps.push(msg('ion1', { cat: cat.formula, kind: kind, an: an.formula, anKind: anKind, q: an.charge }, lg));
     if (cat.variable) {
-      var totalNeg = an.charge * f.anionCount;
-      steps.push('Total negative charge: ' + f.anionCount + ' × ' + an.charge + '− = ' + totalNeg + '−. Spread over ' +
-        f.cationCount + ' ' + cat.formula + ' → each is ' + cat.charge + '+, so write the Roman numeral (' + ROMAN[cat.charge] + ').');
+      steps.push(msg('ion2', { na: f.anionCount, q: an.charge, tot: an.charge * f.anionCount, nc: f.cationCount, cat: cat.formula, c: cat.charge, r: ROMAN[cat.charge] }, lg));
     }
-    steps.push('Name the cation first, then the anion: ' + ionicName(cat, an) + '.');
+    steps.push(msg('ion3', { name: ionicName(cat, an, lg) }, lg));
     return steps;
   }
 
   return {
     ELEMENTS: ELEMENTS,
     bySymbol: bySymbol,
+    setLang: setLang,
+    getLang: function () { return lang; },
+    elName: elName,
+    de: de,
     isMetal: isMetal,
     isNonmetal: isNonmetal,
     valenceElectrons: valenceElectrons,
@@ -451,10 +581,14 @@
     atomTally: atomTally,
     ionicFormula: ionicFormula,
     ionicName: ionicName,
+    ionName: ionName,
+    knownName: knownName,
+    covalentName: covalentName,
     isPolyatomic: isPolyatomic,
     nameCompound: nameCompound,
     prefixed: prefixed,
     PREFIXES: PREFIXES,
+    PREFIXES_FR: PREFIXES_FR,
     ROMAN: ROMAN,
     IDE: IDE,
     CATIONS: CATIONS,
