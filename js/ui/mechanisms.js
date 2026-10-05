@@ -397,68 +397,256 @@
     ]));
   }
 
-  // Textbook decision rules. Returns { mech, minor, why: [keys] }.
-  function predict(sub, reagent, heat) {
-    var r = { mech: null, minor: null, why: [] };
-    if (sub === 'methyl') {
-      if (reagent === 'weak') { r.why.push('why.methylWeak'); return r; }
-      r.mech = 'sn2'; r.why.push('why.methyl'); return r;
+  // ---------- Reaction predictor (real molecules + reagents) ----------
+
+  I18N.add({
+    en: {
+      'rp.title': 'Reaction predictor', 'rp.intro': 'Pick a starting molecule and a reagent. The app gives the most likely product, the mechanism, every step of the workflow and the role of any catalyst.',
+      'rp.substrate': 'Starting molecule', 'rp.reagent': 'Reagent', 'rp.heat': 'Heat (Δ)',
+      'rp.g.halide': 'Alkyl halides', 'rp.g.alcohol': 'Alcohols', 'rp.g.acid': 'Carboxylic acids',
+      'rp.major': 'Major product', 'rp.minor': 'Minor product', 'rp.by': 'Also formed', 'rp.mechanism': 'Mechanism',
+      'rp.why': 'Why', 'rp.workflow': 'Workflow, step by step', 'rp.watch': 'Watch the {m} animation',
+      'rp.animNote': 'The animation uses Br as the leaving group and simple balls for CH₃ groups.',
+      'rp.mm': '{f} · {m} g/mol',
+      'rp.m.none': 'No reaction', 'rp.m.acidbase': 'Acid–base reaction', 'rp.m.slow': 'Very slow without a catalyst',
+      'rp.m.fischer': 'Fischer esterification (acid-catalyzed)',
+      'rp.cat.enter': 'catalyst enters', 'rp.cat.regen': 'catalyst regenerated',
+      'rp.cat.title': 'Catalyst', 'rp.cat.none': 'No catalyst is needed for this reaction.',
+      'rp.cat.facts': 'Enters in step {a} and is given back in step {b}. It is not used up, so only a small amount is needed. It speeds the reaction up by giving a path with a lower activation energy.',
+      'catalyst.h2so4': 'sulfuric acid (H⁺ source)',
+      'catalyst.dehydration': 'H⁺ turns the –OH group into –OH₂⁺. Water is a much better leaving group than OH⁻, so the alcohol can lose it.',
+      'catalyst.ester': 'H⁺ attaches to the C=O oxygen, which makes the carbon more positive and easier for the alcohol to attack.',
+      'catalyst.hbrConsumed': 'HBr is a reagent here, not a catalyst: its H⁺ ends up in water and its Br ends up in the product, so it is used up.',
+
+      'why.noBetaH': 'There is no hydrogen on a neighboring carbon, so elimination is impossible.',
+      'why.hofmann': 'The bulky base can only reach the H atoms on the outside of the molecule, so the less substituted alkene wins (Hofmann product).',
+      'why.zaitsev': 'When two alkenes are possible, the more substituted (more stable) one is the major product (Zaitsev rule).',
+      'why.dehydration': 'Hot concentrated acid removes water from the alcohol (dehydration). 2° and 3° alcohols go through a carbocation (E1); 1° alcohols react by E2.',
+      'why.hbr1': 'The protonated primary alcohol is attacked from the back by Br⁻: SN2.',
+      'why.hbr23': 'The protonated alcohol loses water to give a carbocation, which Br⁻ then attacks: SN1.',
+      'why.poorLG': 'OH⁻ is a very poor leaving group, so alcohols do not react with bases or nucleophiles. They need an acid first (try H₂SO₄ or HBr).',
+      'why.neutralize': 'Acetic acid gives its H⁺ to OH⁻. This is a fast acid–base reaction, not a substitution.',
+      'why.noCatalyst': 'Acid + alcohol alone react extremely slowly (days or weeks). Add a few drops of H₂SO₄ as a catalyst and the ester forms in about an hour of heating.',
+      'why.fischer': 'The alcohol replaces the –OH of the acid. The acid catalyst activates the C=O group and is given back at the end.',
+
+      'step.sn2': '{nuc} attacks the carbon from the side opposite Br while the C–Br bond breaks. One single step.',
+      'step.sn2.chiral': 'The carbon is a stereocenter: its configuration is inverted (R becomes S).',
+      'step.ionize': 'The C–Br bond breaks on its own and Br⁻ leaves, giving a flat carbocation. This is the slow step.',
+      'step.sn1.attack': '{nuc} attacks the carbocation from either side.',
+      'step.sn1.deprotonate': 'The product loses H⁺ to the solvent and becomes neutral.',
+      'step.sn1.chiral': 'Both faces are attacked equally, so a stereocenter ends up as a 50/50 mixture (racemic).',
+      'step.e2': '{nuc} removes an H from the carbon next to C–Br. At the same time the C=C forms and Br⁻ leaves. One single step.',
+      'step.e1.deprotonate': 'A solvent molecule removes an H next to the positive carbon, and the C=C double bond forms.',
+      'step.protonateOH': 'H⁺ from H₂SO₄ bonds to the oxygen of –OH, giving –OH₂⁺.',
+      'step.protonateOH.hbr': 'H⁺ from HBr bonds to the oxygen of –OH, giving –OH₂⁺ (a good leaving group).',
+      'step.loseWater': 'Water leaves, giving a carbocation. This is the slow step.',
+      'step.dehydration.e1': 'HSO₄⁻ (or water) removes an H next to the positive carbon. The C=C forms and H⁺ is given back, re-forming H₂SO₄.',
+      'step.dehydration.e2': 'HSO₄⁻ removes an H from the neighboring carbon while water leaves, forming C=C. H₂SO₄ is re-formed.',
+      'step.hbr.sn1': 'Br⁻ attacks the carbocation and the alkyl bromide forms.',
+      'step.hbr.sn2': 'Br⁻ attacks the carbon from the back while water leaves (SN2).',
+      'step.neutralize': 'OH⁻ takes the acidic H of –COOH. The acetate ion and water form.',
+      'step.fischer.1': 'H⁺ from H₂SO₄ bonds to the C=O oxygen of the acid.',
+      'step.fischer.2': 'The alcohol oxygen attacks the carbonyl carbon, giving a tetrahedral intermediate.',
+      'step.fischer.3': 'A proton moves onto one of the –OH groups, making it –OH₂⁺.',
+      'step.fischer.4': 'Water leaves and the C=O double bond forms again.',
+      'step.fischer.5': 'The C=O oxygen loses its H⁺. The ester is formed and H⁺ goes back to the catalyst.',
+      'step.fischer.eq': 'All steps are reversible (equilibrium). Using excess alcohol or removing water gives more ester.'
+    },
+    fr: {
+      'rp.title': 'Prédicteur de réactions', 'rp.intro': 'Choisis une molécule de départ et un réactif. L’application donne le produit le plus probable, le mécanisme, chaque étape et le rôle d’un éventuel catalyseur.',
+      'rp.substrate': 'Molécule de départ', 'rp.reagent': 'Réactif', 'rp.heat': 'Chauffage (Δ)',
+      'rp.g.halide': 'Halogénoalcanes', 'rp.g.alcohol': 'Alcools', 'rp.g.acid': 'Acides carboxyliques',
+      'rp.major': 'Produit majoritaire', 'rp.minor': 'Produit minoritaire', 'rp.by': 'Se forme aussi', 'rp.mechanism': 'Mécanisme',
+      'rp.why': 'Pourquoi', 'rp.workflow': 'Déroulement, étape par étape', 'rp.watch': 'Voir l’animation {m}',
+      'rp.animNote': 'L’animation utilise Br comme groupe partant et des boules simples pour les groupes CH₃.',
+      'rp.mm': '{f} · {m} g/mol',
+      'rp.m.none': 'Pas de réaction', 'rp.m.acidbase': 'Réaction acide–base', 'rp.m.slow': 'Très lente sans catalyseur',
+      'rp.m.fischer': 'Estérification de Fischer (catalyse acide)',
+      'rp.cat.enter': 'le catalyseur entre', 'rp.cat.regen': 'le catalyseur est régénéré',
+      'rp.cat.title': 'Catalyseur', 'rp.cat.none': 'Aucun catalyseur n’est nécessaire pour cette réaction.',
+      'rp.cat.facts': 'Il entre à l’étape {a} et est rendu à l’étape {b}. Il n’est pas consommé : une petite quantité suffit. Il accélère la réaction en offrant un chemin d’énergie d’activation plus basse.',
+      'catalyst.h2so4': 'acide sulfurique (source de H⁺)',
+      'catalyst.dehydration': 'H⁺ transforme le groupe –OH en –OH₂⁺. L’eau est un bien meilleur groupe partant que OH⁻, donc l’alcool peut la perdre.',
+      'catalyst.ester': 'H⁺ se fixe sur l’oxygène du C=O, ce qui rend le carbone plus positif et plus facile à attaquer par l’alcool.',
+      'catalyst.hbrConsumed': 'Ici HBr est un réactif, pas un catalyseur : son H⁺ finit dans l’eau et son Br dans le produit, il est donc consommé.',
+
+      'why.noBetaH': 'Il n’y a pas d’hydrogène sur un carbone voisin : l’élimination est impossible.',
+      'why.hofmann': 'La base encombrée n’atteint que les H à l’extérieur de la molécule : l’alcène le moins substitué l’emporte (produit de Hofmann).',
+      'why.zaitsev': 'Quand deux alcènes sont possibles, le plus substitué (le plus stable) est majoritaire (règle de Zaïtsev).',
+      'why.dehydration': 'L’acide concentré chaud retire une molécule d’eau à l’alcool (déshydratation). Les alcools 2° et 3° passent par un carbocation (E1) ; les alcools 1° réagissent par E2.',
+      'why.hbr1': 'L’alcool primaire protoné est attaqué par l’arrière par Br⁻ : SN2.',
+      'why.hbr23': 'L’alcool protoné perd une molécule d’eau et donne un carbocation, que Br⁻ attaque ensuite : SN1.',
+      'why.poorLG': 'OH⁻ est un très mauvais groupe partant : les alcools ne réagissent pas avec les bases ou les nucléophiles. Il faut d’abord un acide (essaie H₂SO₄ ou HBr).',
+      'why.neutralize': 'L’acide acétique cède son H⁺ à OH⁻. C’est une réaction acide–base rapide, pas une substitution.',
+      'why.noCatalyst': 'Un acide et un alcool seuls réagissent extrêmement lentement (des jours ou des semaines). Avec quelques gouttes de H₂SO₄ comme catalyseur, l’ester se forme en environ une heure de chauffage.',
+      'why.fischer': 'L’alcool remplace le –OH de l’acide. Le catalyseur acide active le groupe C=O et est rendu à la fin.',
+
+      'step.sn2': '{nuc} attaque le carbone du côté opposé à Br pendant que la liaison C–Br se rompt. Une seule étape.',
+      'step.sn2.chiral': 'Le carbone est un centre stéréogène : sa configuration est inversée (R devient S).',
+      'step.ionize': 'La liaison C–Br se rompt seule et Br⁻ part, ce qui donne un carbocation plan. C’est l’étape lente.',
+      'step.sn1.attack': '{nuc} attaque le carbocation d’un côté ou de l’autre.',
+      'step.sn1.deprotonate': 'Le produit perd un H⁺ au profit du solvant et devient neutre.',
+      'step.sn1.chiral': 'Les deux faces sont attaquées de la même façon : un centre stéréogène donne un mélange 50/50 (racémique).',
+      'step.e2': '{nuc} arrache un H sur le carbone voisin de C–Br. En même temps la C=C se forme et Br⁻ part. Une seule étape.',
+      'step.e1.deprotonate': 'Une molécule de solvant arrache un H voisin du carbone positif, et la double liaison C=C se forme.',
+      'step.protonateOH': 'Un H⁺ de H₂SO₄ se lie à l’oxygène du –OH, ce qui donne –OH₂⁺.',
+      'step.protonateOH.hbr': 'Un H⁺ de HBr se lie à l’oxygène du –OH, ce qui donne –OH₂⁺ (un bon groupe partant).',
+      'step.loseWater': 'L’eau part et un carbocation se forme. C’est l’étape lente.',
+      'step.dehydration.e1': 'HSO₄⁻ (ou l’eau) arrache un H voisin du carbone positif. La C=C se forme et le H⁺ est rendu : H₂SO₄ est reformé.',
+      'step.dehydration.e2': 'HSO₄⁻ arrache un H du carbone voisin pendant que l’eau part, ce qui forme la C=C. H₂SO₄ est reformé.',
+      'step.hbr.sn1': 'Br⁻ attaque le carbocation et le bromoalcane se forme.',
+      'step.hbr.sn2': 'Br⁻ attaque le carbone par l’arrière pendant que l’eau part (SN2).',
+      'step.neutralize': 'OH⁻ prend le H acide du –COOH. L’ion acétate et l’eau se forment.',
+      'step.fischer.1': 'Un H⁺ de H₂SO₄ se lie à l’oxygène du C=O de l’acide.',
+      'step.fischer.2': 'L’oxygène de l’alcool attaque le carbone du carbonyle : un intermédiaire tétraédrique se forme.',
+      'step.fischer.3': 'Un proton passe sur un des groupes –OH, qui devient –OH₂⁺.',
+      'step.fischer.4': 'L’eau part et la double liaison C=O se reforme.',
+      'step.fischer.5': 'L’oxygène du C=O perd son H⁺. L’ester est formé et le H⁺ retourne au catalyseur.',
+      'step.fischer.eq': 'Toutes les étapes sont réversibles (équilibre). Un excès d’alcool ou l’élimination de l’eau donne plus d’ester.'
     }
-    if (sub === 'primary') {
-      if (reagent === 'bulky') { r.mech = 'e2'; r.why.push('why.1bulky'); return r; }
-      if (reagent === 'weak') { r.why.push('why.1weak'); return r; }
-      r.mech = 'sn2'; r.why.push('why.1');
-      if (reagent === 'strongBase') r.minor = 'e2';
-      return r;
-    }
-    if (sub === 'secondary') {
-      if (reagent === 'goodNu') { r.mech = 'sn2'; r.why.push('why.2goodNu'); return r; }
-      if (reagent === 'weak') { r.mech = heat ? 'e1' : 'sn1'; r.minor = heat ? 'sn1' : 'e1'; r.why.push('why.2weak'); }
-      else { r.mech = 'e2'; r.minor = reagent === 'strongBase' ? 'sn2' : null; r.why.push('why.2base'); }
-    } else {
-      if (reagent === 'goodNu') { r.mech = 'sn1'; r.why.push('why.3goodNu'); }
-      else if (reagent === 'weak') { r.mech = heat ? 'e1' : 'sn1'; r.minor = heat ? 'sn1' : 'e1'; r.why.push('why.3weak'); }
-      else { r.mech = 'e2'; r.why.push('why.3base'); }
-    }
-    if (heat) r.why.push('why.heat');
-    return r;
+  });
+
+  var P = root.Predict, O = root.ORGANIC, Chem = root.Chem;
+
+  function trName(item) { return I18N.getLang() === 'fr' && item.name_fr ? item.name_fr : item.name; }
+  function prodName(p) { return I18N.getLang() === 'fr' ? p[2] : p[1]; }
+
+  // "Br-" → Br⁻, "H3O+" → H₃O⁺, "CH3CH=CH2" → CH₃CH=CH₂
+  function species(f) {
+    var m = /^(.*?)([+-])$/.exec(f);
+    var core = m ? m[1] : f;
+    return UI.formula(core) + (m ? '<sup>' + (m[2] === '+' ? '+' : '−') + '</sup>' : '');
+  }
+
+  function molecular(f) {
+    var c = Chem.parseFormula(f.replace(/=/g, '')).counts;
+    return { formula: Chem.hillKey(c), mass: Chem.molarMass(c) };
+  }
+
+  function mechLabel(m) {
+    if (/^(sn1|sn2|e1|e2)$/.test(m)) return m.toUpperCase() + ' — ' + t('mech.' + m + '.full');
+    return t('rp.m.' + m);
+  }
+
+  function productCard(label, p, cls) {
+    var mol = molecular(p[0]);
+    return h('div', { class: 'rp-product ' + cls }, [
+      h('div', { class: 'small muted', text: label }),
+      h('div', { class: 'rp-formula', html: species(p[0]) }),
+      h('div', { class: 'rp-name', text: prodName(p) }),
+      h('div', { class: 'small muted', html: t('rp.mm', { f: UI.formula(mol.formula), m: UI.fmt(mol.mass, 2) }) })
+    ]);
   }
 
   function renderPredictor(box) {
-    var subSel = h('select', { class: 'input', id: 'pred-sub' });
-    M.substrates.forEach(function (s) { subSel.appendChild(h('option', { value: s.key, text: t('mech.sub.' + s.key) + ' — ' + s.formula })); });
-    var reSel = h('select', { class: 'input', id: 'pred-reagent' });
-    ['goodNu', 'strongBase', 'bulky', 'weak'].forEach(function (k) { reSel.appendChild(h('option', { value: k, text: t('pred.r.' + k) })); });
-    var heat = h('input', { type: 'checkbox', id: 'pred-heat' });
-    var out = h('div', { class: 'pred-out', 'aria-live': 'polite' });
-    subSel.value = 'tertiary'; reSel.value = 'weak';
+    var subSel = h('select', { class: 'input', id: 'rp-sub' });
+    ['halide', 'alcohol', 'acid'].forEach(function (kind) {
+      var g = h('optgroup', { label: t('rp.g.' + kind) });
+      O.substrates.filter(function (s) { return s.kind === kind; }).forEach(function (s) {
+        g.appendChild(h('option', { value: s.id, text: trName(s) + ' — ' + s.formula.replace(/(\d)/g, function (d) { return '₀₁₂₃₄₅₆₇₈₉'[d]; }) }));
+      });
+      subSel.appendChild(g);
+    });
+    var reSel = h('select', { class: 'input', id: 'rp-reagent' });
+    var heat = h('input', { type: 'checkbox', id: 'rp-heat' });
+    var out = h('div', { class: 'stack', 'aria-live': 'polite' });
+
+    function fillReagents() {
+      var keep = reSel.value;
+      reSel.innerHTML = '';
+      P.reagentsFor(subSel.value).forEach(function (r) {
+        reSel.appendChild(h('option', { value: r.id, text: I18N.getLang() === 'fr' && r.label_fr ? r.label_fr : r.label }));
+      });
+      if ([].some.call(reSel.options, function (o) { return o.value === keep; })) reSel.value = keep;
+    }
+
     function update() {
-      var r = predict(subSel.value, reSel.value, heat.checked);
+      var r = P.predict(subSel.value, reSel.value, heat.checked);
       out.innerHTML = '';
-      out.appendChild(h('div', { class: 'pred-result', text: r.mech ? r.mech.toUpperCase() + (r.minor ? '  (+ ' + r.minor.toUpperCase() + ')' : '') : t('pred.none') }));
-      var ul = h('ul', { class: 'small' });
-      r.why.forEach(function (w) { ul.appendChild(h('li', { text: t(w) })); });
-      out.appendChild(ul);
-      if (r.mech) {
-        out.appendChild(h('button', { class: 'btn', type: 'button', text: t('pred.show'), onclick: function () {
-          var sub = subSel.value;
-          select(r.mech, /^sn/.test(r.mech) ? sub : null);
-          els.stageWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        } }));
+      if (!r) return;
+      var sub = r.substrate;
+      var heatUsed = heat.checked || r.reagent.type === 'acidCat' || r.mech === 'fischer';
+
+      // Equation with conditions (and the catalyst) written over the arrow.
+      var over = [];
+      if (r.catalyst) over.push('<span class="rp-cat-tag">cat. ' + UI.formula(r.catalyst.formula) + '</span>');
+      if (heatUsed) over.push('Δ');
+      // A catalyst is written over the arrow, never as a reactant.
+      var left = species(sub.formula) + (r.reagent.type === 'acidCat' ? '' : ' + ' + species(r.reagent.formula));
+      var right = r.major ? species(r.major[0]) + (r.byproducts.length ? ' + ' + r.byproducts.map(species).join(' + ') : '') : '✗';
+      out.appendChild(h('div', { class: 'equation rp-equation', html: '<span>' + left + '</span>' +
+        '<span class="rp-arrow"><span class="rp-over">' + over.join(' ') + '</span><span>⟶</span></span><span>' + right + '</span>' }));
+
+      out.appendChild(h('div', { class: 'row' }, [
+        h('span', { class: 'badge rp-mech', text: t('rp.mechanism') + ': ' + mechLabel(r.mech) }),
+        r.minorMech && r.minor ? h('span', { class: 'badge', text: '+ ' + r.minorMech.toUpperCase() }) : null
+      ]));
+
+      if (r.major) {
+        out.appendChild(h('div', { class: 'rp-products' }, [
+          productCard(t('rp.major'), r.major, 'major'),
+          r.minor ? productCard(t('rp.minor'), r.minor, 'minor') : null
+        ]));
+      }
+
+      var why = h('ul', { class: 'small' });
+      r.why.forEach(function (w) { why.appendChild(h('li', { text: t(w) })); });
+      out.appendChild(h('div', null, [h('h3', { text: t('rp.why') }), why]));
+
+      if (r.steps.length) {
+        var ol = h('ol', { class: 'steps rp-steps' });
+        r.steps.forEach(function (st) {
+          var v = st.vars ? { nuc: I18N.getLang() === 'fr' ? st.vars.nuc_fr : st.vars.nuc } : null;
+          ol.appendChild(h('li', { class: st.cat ? 'rp-cat-step' : null }, [
+            st.cat ? h('span', { class: 'badge rp-cat-badge', text: t('rp.cat.' + st.cat) }) : null,
+            ' ' + t(st.key, v)
+          ]));
+        });
+        out.appendChild(h('div', null, [h('h3', { text: t('rp.workflow') }), ol]));
+      }
+
+      // Catalyst panel: what it is, where it enters, where it comes back.
+      var catBox = h('div', { class: 'rp-catalyst' }, [h('h3', { text: t('rp.cat.title') })]);
+      if (r.catalyst) {
+        var enter = r.steps.findIndex(function (s) { return s.cat === 'enter'; }) + 1;
+        var back = r.steps.findIndex(function (s) { return s.cat === 'regen'; }) + 1;
+        catBox.appendChild(h('div', { class: 'rp-formula', html: UI.formula(r.catalyst.formula) + ' <span class="small muted">' + UI.esc(t(r.catalyst.name)) + '</span>' }));
+        catBox.appendChild(h('p', { class: 'small', text: t(r.catalyst.role) }));
+        catBox.appendChild(h('p', { class: 'small', text: t('rp.cat.facts', { a: enter, b: back }) }));
+      } else if (r.notCatalyst) {
+        catBox.appendChild(h('p', { class: 'small', text: t(r.notCatalyst) }));
+      } else {
+        catBox.appendChild(h('p', { class: 'small muted', text: t('rp.cat.none') }));
+      }
+      out.appendChild(catBox);
+
+      if (r.animate) {
+        out.appendChild(h('div', { class: 'row' }, [
+          h('button', { class: 'btn primary', type: 'button', text: t('rp.watch', { m: r.animate.toUpperCase() }), onclick: function () {
+            select(r.animate, /^sn/.test(r.animate) ? r.animClass : null);
+            els.stageWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          } }),
+          h('span', { class: 'small muted', text: t('rp.animNote') })
+        ]));
       }
     }
-    [subSel, reSel, heat].forEach(function (c) { c.addEventListener('change', update); });
+
+    subSel.addEventListener('change', function () { fillReagents(); update(); });
+    [reSel, heat].forEach(function (c) { c.addEventListener('change', update); });
     subSel.style.width = reSel.style.width = '100%';
-    box.appendChild(h('div', { class: 'card stack' }, [
-      h('h3', { text: t('pred.title') }),
-      h('p', { class: 'small muted', text: t('pred.intro') }),
+    box.appendChild(h('div', { class: 'card stack rp-card' }, [
+      h('h3', { text: t('rp.title') }),
+      h('p', { class: 'small muted', text: t('rp.intro') }),
       h('div', { class: 'ion-select' }, [
-        h('label', { for: 'pred-sub' }, [t('pred.substrate'), subSel]),
-        h('label', { for: 'pred-reagent' }, [t('pred.reagent'), reSel])
+        h('label', { for: 'rp-sub' }, [t('rp.substrate'), subSel]),
+        h('label', { for: 'rp-reagent' }, [t('rp.reagent'), reSel])
       ]),
-      h('label', { class: 'row small', for: 'pred-heat' }, [heat, t('pred.heat')]),
+      h('label', { class: 'row small', for: 'rp-heat' }, [heat, t('rp.heat')]),
       out
     ]));
+    subSel.value = '2-C4H9Br';
+    fillReagents();
+    reSel.value = 'NaOH';
     update();
   }
 
@@ -558,17 +746,17 @@
       els.caption
     ]);
 
+    var top = h('div', { style: { marginBottom: '16px' } });
+    box.appendChild(top);
     box.appendChild(els.tabs);
     box.appendChild(h('div', { class: 'mech-layout' }, [
       els.stageWrap,
       h('div', { class: 'stack' }, [h('div', { class: 'card' }, [els.energy]), els.facts])
     ]));
-    var lower = h('div', { style: { marginTop: '16px' } });
-    renderPredictor(lower);
-    box.appendChild(lower);
     box.appendChild(h('div', { class: 'card', style: { marginTop: '16px' } }, [h('h3', { text: t('cmp.title') }), comparisonTable()]));
     select('sn2', 'secondary');
+    renderPredictor(top);
   }
 
-  UI.views.mechanisms = { init: init, predict: predict };
+  UI.views.mechanisms = { init: init };
 })(this);

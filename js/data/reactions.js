@@ -18,6 +18,7 @@
       explain: 'Heating iron filings with sulfur makes black iron(II) sulfide. Before heating you could separate them with a magnet — after, you cannot: a new compound formed.' },
     { reactants: ['N2', 'H2'], products: ['NH3'], type: 'synthesis', energy: 'exothermic', effect: 'none',
       condition: 'high pressure, iron catalyst', color: '#e8f4ff',
+      catalyst: { formula: 'Fe', name: 'iron', role: 'N₂ and H₂ stick to the iron surface, where their strong bonds are weakened and split, so ammonia forms much faster at a lower temperature.' },
       explain: 'The Haber process makes ammonia for fertilizers. It feeds billions of people, but needs high pressure and a catalyst because the N≡N bond is so strong.' },
     { reactants: ['NH3', 'HCl'], products: ['NH4Cl'], type: 'synthesis', energy: 'exothermic', effect: 'smoke',
       color: '#ffffff',
@@ -31,6 +32,7 @@
 
     { reactants: ['H2O2'], products: ['H2O', 'O2'], type: 'decomposition', energy: 'exothermic', effect: 'bubbles',
       condition: 'MnO2 catalyst', color: '#f4f9ff',
+      catalyst: { formula: 'MnO2', name: 'manganese(IV) oxide', role: 'Gives the H₂O₂ molecules a surface where their O–O bond breaks easily, so the activation energy is much lower. Without it, H₂O₂ decomposes very slowly.' },
       explain: 'Hydrogen peroxide breaks down into water and oxygen gas. A catalyst (manganese dioxide or the enzyme catalase in liver) makes it fizz fast. A glowing splint relights in the oxygen.' },
     { reactants: ['CaCO3'], products: ['CaO', 'CO2'], type: 'decomposition', energy: 'endothermic', effect: 'heat',
       condition: 'strong heat', color: '#f5f5f0',

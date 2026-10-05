@@ -379,3 +379,20 @@ footer { max-width: 1280px; margin: 0 auto; padding: 16px; color: var(--muted); 
 .mech-table th:first-child { white-space: nowrap; }
 .mech-table td { font-size: .85rem; min-width: 140px; }
 .pred-result { font-size: 1.6rem; font-weight: 800; color: var(--accent); }
+
+/* ---------- Reaction predictor ---------- */
+.rp-card { border-color: var(--accent); }
+.rp-equation { font-size: 1.2rem; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: center; gap: 6px; }
+.rp-arrow { vertical-align: bottom; display: inline-flex; flex-direction: column; align-items: center; line-height: 1; font-size: 1.6rem; padding: 0 4px; }
+.rp-over { font-size: .75rem; font-weight: 700; min-height: 1.2em; color: var(--muted); }
+.rp-cat-tag { color: var(--warn); }
+.rp-mech { background: var(--accent-soft); color: var(--accent); font-size: .9rem; }
+.rp-products { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.rp-product { padding: 12px; border-radius: 10px; background: var(--surface-2); border: 2px solid transparent; }
+.rp-product.major { border-color: var(--accent); }
+.rp-formula { font-size: 1.35rem; font-weight: 800; }
+.rp-name { font-weight: 700; color: var(--accent); }
+.rp-steps li { margin: .5em 0; }
+.rp-cat-step { background: var(--surface-2); border-radius: 8px; padding: 4px 8px; }
+.rp-cat-badge { background: var(--warn); color: var(--surface); }
+.rp-catalyst { padding: 12px; border-radius: 10px; border: 1px dashed var(--warn); }

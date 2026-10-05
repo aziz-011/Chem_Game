@@ -109,3 +109,34 @@ test('mechanism frames are complete and consistent', () => {
     });
   }
 });
+
+test('reaction predictor gives textbook products', () => {
+  const P = require('../js/predict.js');
+  const ORG = require('../js/data/organic.js');
+  const name = (o) => o.major && o.major[1];
+  assert.equal(P.predict('C2H5Br', 'NaOH').mech, 'sn2');
+  assert.equal(name(P.predict('C2H5Br', 'NaOH')), 'ethanol');
+  assert.equal(name(P.predict('2-C4H9Br', 'NaOH')), 'but-2-ene (mostly trans)');
+  assert.equal(name(P.predict('2-C4H9Br', 'KOtBu')), 'but-1-ene');
+  assert.equal(P.predict('t-C4H9Br', 'H2O').mech, 'sn1');
+  assert.equal(P.predict('t-C4H9Br', 'H2O', true).mech, 'e1');
+  assert.equal(P.predict('CH3Br', 'H2O').mech, 'none');
+  assert.equal(P.predict('EtOH', 'NaOH').mech, 'none');
+  const dehyd = P.predict('cHexOH', 'H2SO4');
+  assert.equal(name(dehyd), 'cyclohexene');
+  assert.ok(dehyd.catalyst && dehyd.catalyst.regenerated);
+  assert.equal(dehyd.steps[0].cat, 'enter');
+  assert.equal(P.predict('AcOH', 'EtOH_cat').mech, 'fischer');
+  assert.equal(P.predict('AcOH', 'EtOH_nocat').mech, 'slow');
+  assert.ok(!P.predict('tBuOH', 'HBr').catalyst);
+  // Every combination returns a result, and every product formula parses.
+  for (const s of ORG.substrates) {
+    for (const r of P.reagentsFor(s.id)) {
+      for (const heat of [false, true]) {
+        const o = P.predict(s.id, r.id, heat);
+        assert.ok(o && o.mech, s.id + ' ' + r.id);
+        for (const p of [o.major, o.minor]) if (p) Chem.parseFormula(p[0].replace(/=/g, ''));
+      }
+    }
+  }
+});

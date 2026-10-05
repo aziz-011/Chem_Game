@@ -130,11 +130,26 @@
     }, 450);
   }
 
-  function equationHTML(b) {
+  function equationHTML(b, catalyst) {
     function side(list) {
       return list.map(function (s) { return (s.coef > 1 ? '<span class="coef">' + s.coef + '</span> ' : '') + UI.formula(s.formula); }).join(' + ');
     }
-    return side(b.reactants) + ' → ' + side(b.products);
+    var arrow = catalyst ? ' <span class="rp-arrow"><span class="rp-over"><span class="rp-cat-tag">' + UI.formula(catalyst.formula) + '</span></span><span>⟶</span></span> ' : ' → ';
+    return side(b.reactants) + arrow + side(b.products);
+  }
+
+  // Shows what the catalyst does and that it comes out unchanged.
+  function catalystBox(c, b) {
+    return h('div', { class: 'rp-catalyst' }, [
+      h('h3', { text: 'Catalyst' }),
+      h('div', { class: 'rp-formula', html: UI.formula(c.formula) + ' <span class="small muted">' + UI.esc(c.name) + '</span>' }),
+      h('ol', { class: 'steps small' }, [
+        h('li', null, [h('span', { class: 'badge rp-cat-badge', text: 'catalyst enters' }),
+          h('span', { html: ' ' + b.reactants.map(function (r) { return UI.formula(r.formula); }).join(' and ') + ' molecules attach to the surface of the ' + UI.esc(c.name) + '.' })]),
+        h('li', { text: c.role }),
+        h('li', null, [h('span', { class: 'badge rp-cat-badge', text: 'catalyst regenerated' }), ' The ' + c.name + ' comes out unchanged and can be used again. It is written over the arrow, not in the equation.'])
+      ])
+    ]);
   }
 
   function tallyTable(b) {
@@ -192,8 +207,9 @@
         h('span', { class: 'badge ' + (rx.energy === 'exothermic' ? 'exo' : 'endo'), text: rx.energy === 'exothermic' ? '🔥 exothermic (releases heat)' : '❄ endothermic (absorbs heat)' }),
         rx.condition ? h('span', { class: 'badge', text: 'needs: ' + rx.condition }) : null
       ]),
-      h('div', { class: 'equation', html: equationHTML(b) }),
+      h('div', { class: 'equation', html: equationHTML(b, rx.catalyst) }),
       h('p', { text: rx.explain }),
+      rx.catalyst ? catalystBox(rx.catalyst, b) : null,
       h('p', { class: 'small', html: '<b>Products:</b> ' + names }),
       h('details', null, [h('summary', { text: 'Check the atom count (law of conservation of mass)' }), tallyTable(b)])
     ]));
