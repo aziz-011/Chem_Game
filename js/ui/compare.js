@@ -64,7 +64,7 @@
     var q = typicalCharge(el);
     return h('div', { class: 'card cmp-card' }, [
       h('h3', null, [h('span', { class: 'badge cat-' + cat.key, style: { color: 'var(--tile-text)' }, text: el.symbol }), el.name,
-        h('span', { class: 'badge', style: { marginLeft: 'auto', background: side === 'a' ? '#4b5cf0' : '#f0784b', color: '#fff' }, text: side.toUpperCase() })]),
+        h('span', { class: 'badge', style: { marginLeft: 'auto', background: side === 'a' ? 'var(--cmp-a)' : 'var(--cmp-b)', color: 'var(--on-accent)' }, text: side.toUpperCase() })]),
       h('div', { class: 'muted small', text: cat.label + ' · ' + el.phase + ' at room temperature' }),
       UI.bohr(el, 190),
       h('div', { class: 'particles' }, [
