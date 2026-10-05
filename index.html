@@ -12,35 +12,39 @@
   <header class="app-header">
     <div class="header-inner">
       <a class="brand" href="#table"><span class="brand-logo">CL</span> ChemLab</a>
-      <nav class="tabs" aria-label="Sections">
-        <a class="tab" href="#table" data-view="table">Periodic Table</a>
-        <a class="tab" href="#compare" data-view="compare">Compare Atoms</a>
-        <a class="tab" href="#molecules" data-view="molecules">Molecules</a>
-        <a class="tab" href="#naming" data-view="naming">Naming</a>
-        <a class="tab" href="#reactions" data-view="reactions">Reaction Lab</a>
+      <nav class="tabs" aria-label="Sections" data-i18n-aria="nav.sections">
+        <a class="tab" href="#table" data-view="table" data-i18n="nav.table">Periodic Table</a>
+        <a class="tab" href="#compare" data-view="compare" data-i18n="nav.compare">Compare Atoms</a>
+        <a class="tab" href="#molecules" data-view="molecules" data-i18n="nav.molecules">Molecules</a>
+        <a class="tab" href="#naming" data-view="naming" data-i18n="nav.naming">Naming</a>
+        <a class="tab" href="#reactions" data-view="reactions" data-i18n="nav.reactions">Reaction Lab</a>
       </nav>
-      <button class="theme-btn" id="theme-btn" type="button" aria-label="Toggle dark mode">◐</button>
+      <select class="input lang-select" id="lang-select" aria-label="Language" data-i18n-aria="lang.label">
+        <option value="en">English</option>
+        <option value="fr">Français</option>
+      </select>
+      <button class="theme-btn" id="theme-btn" type="button" aria-label="Toggle dark mode" data-i18n-aria="theme.toggle">◐</button>
     </div>
   </header>
 
   <main>
     <!-- Periodic table -->
     <section class="view" id="view-table" aria-labelledby="h-table">
-      <h2 id="h-table">The Periodic Table</h2>
-      <p class="intro">Click any element to see what its atom is made of. Use “Color by” to discover the patterns (trends) across the table.</p>
+      <h2 id="h-table" data-i18n="table.title">The Periodic Table</h2>
+      <p class="intro" data-i18n="table.intro">Click any element to see what its atom is made of. Use “Color by” to discover the patterns (trends) across the table.</p>
       <div class="pt-toolbar">
-        <input class="input" id="pt-search" type="search" placeholder="Search name, symbol or number…" aria-label="Search elements">
-        <label class="row small">Color by
+        <input class="input" id="pt-search" type="search" placeholder="Search name, symbol or number…" data-i18n-ph="table.search" aria-label="Search elements">
+        <label class="row small"><span data-i18n="table.colorBy">Color by</span>
           <select class="input" id="pt-color">
-            <option value="category">Element family</option>
-            <option value="phase">State at room temperature</option>
-            <option value="block">Block (s, p, d, f)</option>
-            <option value="en">Electronegativity</option>
-            <option value="radius">Atomic radius</option>
-            <option value="ie1">Ionization energy</option>
-            <option value="mass">Atomic mass</option>
-            <option value="melt">Melting point</option>
-            <option value="density">Density</option>
+            <option value="category" data-i18n="color.category">Element family</option>
+            <option value="phase" data-i18n="color.phase">State at room temperature</option>
+            <option value="block" data-i18n="color.block">Block (s, p, d, f)</option>
+            <option value="en" data-i18n="color.en">Electronegativity</option>
+            <option value="radius" data-i18n="color.radius">Atomic radius</option>
+            <option value="ie1" data-i18n="color.ie1">Ionization energy</option>
+            <option value="mass" data-i18n="color.mass">Atomic mass</option>
+            <option value="melt" data-i18n="color.melt">Melting point</option>
+            <option value="density" data-i18n="color.density">Density</option>
           </select>
         </label>
       </div>
@@ -56,13 +60,13 @@
 
     <!-- Compare atoms -->
     <section class="view" id="view-compare" aria-labelledby="h-compare">
-      <h2 id="h-compare">Compare Two Atoms</h2>
-      <p class="intro">Pick two elements and see how their atoms differ: protons, electrons, size, and how strongly they hold on to electrons.</p>
+      <h2 id="h-compare" data-i18n="compare.title">Compare Two Atoms</h2>
+      <p class="intro" data-i18n="compare.intro">Pick two elements and see how their atoms differ: protons, electrons, size, and how strongly they hold on to electrons.</p>
       <div class="card stack">
         <div class="compare-pickers">
-          <label>Element A <select class="input" id="cmp-a" style="width:100%"></select></label>
+          <label><span data-i18n="compare.a">Element A</span> <select class="input" id="cmp-a" style="width:100%"></select></label>
           <div class="vs">vs</div>
-          <label>Element B <select class="input" id="cmp-b" style="width:100%"></select></label>
+          <label><span data-i18n="compare.b">Element B</span> <select class="input" id="cmp-b" style="width:100%"></select></label>
         </div>
         <div class="row small" id="cmp-presets"></div>
       </div>
@@ -71,32 +75,32 @@
 
     <!-- Molecules -->
     <section class="view" id="view-molecules" aria-labelledby="h-mol">
-      <h2 id="h-mol">Molecule Explorer</h2>
-      <p class="intro">Type a chemical formula to see its name, which atoms it contains, its molar mass and percent composition.</p>
+      <h2 id="h-mol" data-i18n="mol.title">Molecule Explorer</h2>
+      <p class="intro" data-i18n="mol.intro">Type a chemical formula to see its name, which atoms it contains, its molar mass and percent composition.</p>
       <div class="card stack">
         <form class="formula-bar" id="mol-form">
-          <input class="input" id="mol-input" placeholder="e.g. H2O, CO2, Ca(OH)2, C6H12O6" autocomplete="off" spellcheck="false" aria-label="Chemical formula">
-          <button class="btn primary" type="submit">Analyze</button>
+          <input class="input" id="mol-input" placeholder="e.g. H2O, CO2, Ca(OH)2, C6H12O6" data-i18n-ph="mol.placeholder" autocomplete="off" spellcheck="false" aria-label="Chemical formula">
+          <button class="btn primary" type="submit" data-i18n="mol.analyze">Analyze</button>
         </form>
         <div class="row small" id="mol-examples"></div>
       </div>
       <div id="mol-out" style="margin-top:16px"></div>
       <div class="card" style="margin-top:16px">
-        <h3>3D Model Gallery</h3>
-        <p class="small muted">Drag to rotate. Atom colors follow the standard CPK scheme (C black, O red, H white, N blue…).</p>
+        <h3 data-i18n="mol.galleryTitle">3D Model Gallery</h3>
+        <p class="small muted" data-i18n="mol.galleryHint">Drag to rotate. Atom colors follow the standard CPK scheme (C black, O red, H white, N blue…).</p>
         <div class="gallery" id="mol-gallery"></div>
       </div>
     </section>
 
     <!-- Naming -->
     <section class="view" id="view-naming" aria-labelledby="h-naming">
-      <h2 id="h-naming">Naming Compounds</h2>
-      <p class="intro">Learn the rules, build ionic compounds from ions, and test yourself.</p>
+      <h2 id="h-naming" data-i18n="naming.title">Naming Compounds</h2>
+      <p class="intro" data-i18n="naming.intro">Learn the rules, build ionic compounds from ions, and test yourself.</p>
       <div class="subtabs" id="naming-tabs">
-        <button class="chip active" data-sub="name">Name a formula</button>
-        <button class="chip" data-sub="build">Ion builder</button>
-        <button class="chip" data-sub="quiz">Quiz</button>
-        <button class="chip" data-sub="rules">Rules &amp; ions</button>
+        <button class="chip active" data-sub="name" data-i18n="naming.tab.name">Name a formula</button>
+        <button class="chip" data-sub="build" data-i18n="naming.tab.build">Ion builder</button>
+        <button class="chip" data-sub="quiz" data-i18n="naming.tab.quiz">Quiz</button>
+        <button class="chip" data-sub="rules" data-i18n="naming.tab.rules">Rules &amp; ions</button>
       </div>
       <div id="naming-name" class="naming-sub"></div>
       <div id="naming-build" class="naming-sub" hidden></div>
@@ -106,19 +110,19 @@
 
     <!-- Reactions -->
     <section class="view" id="view-reactions" aria-labelledby="h-rx">
-      <h2 id="h-rx">Reaction Lab</h2>
-      <p class="intro">Pick one or two chemicals from the shelf and mix them. Watch what happens, then see the balanced equation and why it works.</p>
+      <h2 id="h-rx" data-i18n="rx.title">Reaction Lab</h2>
+      <p class="intro" data-i18n="rx.intro">Pick one or two chemicals from the shelf and mix them. Watch what happens, then see the balanced equation and why it works.</p>
       <div class="lab">
         <div class="card stack">
           <div class="row" style="justify-content:space-between">
-            <h3 style="margin:0">Chemical shelf</h3>
-            <input class="input small" id="shelf-filter" type="search" placeholder="Filter…" aria-label="Filter chemicals" style="width:140px">
+            <h3 style="margin:0" data-i18n="rx.shelf">Chemical shelf</h3>
+            <input class="input small" id="shelf-filter" type="search" placeholder="Filter…" aria-label="Filter chemicals" data-i18n-ph="rx.filter" data-i18n-aria="rx.filterAria" style="width:140px">
           </div>
           <div class="shelf" id="shelf"></div>
           <div class="row">
             <button class="btn primary" id="mix-btn" type="button" disabled>Mix!</button>
-            <button class="btn" id="clear-btn" type="button">Clear</button>
-            <button class="btn" id="random-btn" type="button">Surprise me</button>
+            <button class="btn" id="clear-btn" type="button" data-i18n="rx.clear">Clear</button>
+            <button class="btn" id="random-btn" type="button" data-i18n="rx.random">Surprise me</button>
           </div>
         </div>
         <div class="card bench">
@@ -131,23 +135,23 @@
         </div>
       </div>
       <div class="card" style="margin-top:16px">
-        <h3>Equation balancer</h3>
-        <p class="small muted">Type any equation using -> or =. Type just a fuel + O2 (like C4H10 + O2) and the combustion products are filled in for you.</p>
+        <h3 data-i18n="rx.balTitle">Equation balancer</h3>
+        <p class="small muted" data-i18n="rx.balHint">Type any equation using -> or =. Type just a fuel + O2 (like C4H10 + O2) and the combustion products are filled in for you.</p>
         <form class="formula-bar" id="bal-form">
-          <input class="input" id="bal-input" placeholder="e.g. Fe + O2 -> Fe2O3" autocomplete="off" spellcheck="false" aria-label="Chemical equation">
-          <button class="btn primary" type="submit">Balance</button>
+          <input class="input" id="bal-input" placeholder="e.g. Fe + O2 -> Fe2O3" data-i18n-ph="rx.balPlaceholder" autocomplete="off" spellcheck="false" aria-label="Chemical equation">
+          <button class="btn primary" type="submit" data-i18n="rx.balance">Balance</button>
         </form>
         <div class="row small" id="bal-examples" style="margin-top:8px"></div>
         <div id="bal-out" style="margin-top:12px"></div>
       </div>
       <div class="card" style="margin-top:16px">
-        <h3>Types of reactions</h3>
+        <h3 data-i18n="rx.typesTitle">Types of reactions</h3>
         <div class="types" id="rx-types"></div>
       </div>
     </section>
   </main>
 
-  <footer>
+  <footer data-i18n-html="footer">
     Element data from the open <a href="https://github.com/Bowserinator/Periodic-Table-JSON" rel="noopener">Periodic-Table-JSON</a> dataset (compiled from Wikipedia).
     Reactions shown are simplified for learning — never try them without a teacher and proper safety equipment.
   </footer>
@@ -156,6 +160,8 @@
   <script src="js/data/compounds.js"></script>
   <script src="js/data/molecules.js"></script>
   <script src="js/data/reactions.js"></script>
+  <script src="js/data/names-fr.js"></script>
+  <script src="js/i18n.js"></script>
   <script src="js/chem.js"></script>
   <script src="js/ui/common.js"></script>
   <script src="js/ui/table.js"></script>

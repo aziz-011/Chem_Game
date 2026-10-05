@@ -31,6 +31,23 @@
     });
   }
 
+  // Language is applied before the views render; switching reloads so every view re-renders in it.
+  function initLang() {
+    var lang = UI.store.get('lang', null) || ((navigator.language || '').slice(0, 2) === 'fr' ? 'fr' : 'en');
+    root.I18N.setLang(lang);
+    root.Chem.setLang(lang);
+    document.documentElement.lang = lang;
+    document.title = root.I18N.t('app.title');
+    root.I18N.translateDom(document);
+    var sel = document.getElementById('lang-select');
+    sel.value = lang;
+    sel.addEventListener('change', function () {
+      UI.store.set('lang', sel.value);
+      location.reload();
+    });
+  }
+
+  initLang();
   initTheme();
   VIEWS.forEach(function (v) { UI.views[v].init(); });
   window.addEventListener('hashchange', function () { route(); window.scrollTo(0, 0); });
