@@ -140,3 +140,24 @@ test('reaction predictor gives textbook products', () => {
     }
   }
 });
+
+test('aromatic substitution and quantity calculations', () => {
+  const P = require('../js/predict.js');
+  const tol = P.predict('C6H6', 'CH3Cl_AlCl3');
+  assert.equal(tol.mech, 'sear');
+  assert.equal(tol.major[1], 'methylbenzene (toluene)');
+  assert.equal(tol.catalyst.formula, 'AlCl3');
+  assert.equal(P.predict('PhNO2', 'CH3Cl_AlCl3').mech, 'none');
+  assert.match(P.predict('PhNO2', 'Br2_FeBr3').major[1], /3-nitro/);
+  assert.match(P.predict('PhCH3', 'Br2_FeBr3').major[1], /4-methyl/);
+  // 10 g benzene + 8 g CH3Cl: benzene (0.128 mol) is limiting → 11.80 g toluene.
+  const b = Chem.balance(tol.calc.reactants, tol.calc.products);
+  const s = Chem.stoichiometry(b, { C6H6: 10, CH3Cl: 8 });
+  assert.equal(s.limiting.formula, 'C6H6');
+  assert.ok(Math.abs(s.products[0].mass - 11.796) < 0.01);
+  assert.ok(Math.abs(s.reactants[1].leftMass - 1.537) < 0.01);
+  // 2 H2 + O2: 4 g H2 (1.984 mol ÷ 2 = 0.992) vs 40 g O2 (1.25 mol) → H2 limiting → 35.75 g water.
+  const w = Chem.stoichiometry(Chem.balanceText('H2 + O2 -> H2O'), { H2: 4, O2: 40 });
+  assert.equal(w.limiting.formula, 'H2');
+  assert.ok(Math.abs(w.products[0].mass - 35.75) < 0.02);
+});

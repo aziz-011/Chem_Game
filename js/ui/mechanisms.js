@@ -403,7 +403,8 @@
     en: {
       'rp.title': 'Reaction predictor', 'rp.intro': 'Pick a starting molecule and a reagent. The app gives the most likely product, the mechanism, every step of the workflow and the role of any catalyst.',
       'rp.substrate': 'Starting molecule', 'rp.reagent': 'Reagent', 'rp.heat': 'Heat (Δ)',
-      'rp.g.halide': 'Alkyl halides', 'rp.g.alcohol': 'Alcohols', 'rp.g.acid': 'Carboxylic acids',
+      'rp.g.halide': 'Alkyl halides', 'rp.g.alcohol': 'Alcohols', 'rp.g.acid': 'Carboxylic acids', 'rp.g.aromatic': 'Aromatic rings (benzene…)',
+      'rp.m.sear': 'Electrophilic aromatic substitution (SEAr)',
       'rp.major': 'Major product', 'rp.minor': 'Minor product', 'rp.by': 'Also formed', 'rp.mechanism': 'Mechanism',
       'rp.why': 'Why', 'rp.workflow': 'Workflow, step by step', 'rp.watch': 'Watch the {m} animation',
       'rp.animNote': 'The animation uses Br as the leaving group and simple balls for CH₃ groups.',
@@ -414,6 +415,27 @@
       'rp.cat.title': 'Catalyst', 'rp.cat.none': 'No catalyst is needed for this reaction.',
       'rp.cat.facts': 'Enters in step {a} and is given back in step {b}. It is not used up, so only a small amount is needed. It speeds the reaction up by giving a path with a lower activation energy.',
       'catalyst.h2so4': 'sulfuric acid (H⁺ source)',
+      'catalyst.alcl3': 'aluminum chloride (Lewis acid)', 'catalyst.febr3': 'iron(III) bromide (Lewis acid)', 'catalyst.fecl3': 'iron(III) chloride (Lewis acid)',
+      'catalyst.fc': 'AlCl₃ takes the Cl from the reagent, leaving a positive carbon (the electrophile) that is strong enough to attack the stable benzene ring.',
+      'catalyst.halogen': 'The iron halide pulls on one halogen atom, making the other one strongly positive so the ring can attack it.',
+      'catalyst.sulfonation': 'H₂SO₄ gives H⁺ to SO₃, forming the very reactive SO₃H⁺ electrophile.',
+      'why.sear': 'The benzene ring is very stable (aromatic). It keeps its ring by swapping one H for the new group: substitution, not addition.',
+      'why.dir.none': 'All six positions of benzene are the same, so there is only one product.',
+      'why.dir.op': 'The {group} group pushes electrons into the ring: the ring reacts faster than benzene and the new group goes ortho or para. Para is major because ortho is more crowded.',
+      'why.dir.strong': 'The –OCH₃ group strongly pushes electrons into the ring: very fast reaction, new group ortho or para (para major).',
+      'why.dir.meta': 'The –NO₂ group pulls electrons out of the ring: slower reaction, and the new group goes to the meta position.',
+      'why.fcDeactivated': 'Friedel–Crafts reactions do not work on rings with strongly electron-withdrawing groups like –NO₂: the ring is too poor in electrons to attack.',
+      'why.fcPoly': 'Limit: the product is more reactive than the start, so a second group can add (polyalkylation). Using excess benzene reduces this.',
+      'why.fcAcyl': 'The C=O group makes the product less reactive, so the reaction stops cleanly after one group.',
+      'step.sear.1.alkyl': 'The catalyst {cat} removes Cl⁻ from the reagent, giving the electrophile {E} and {X}.',
+      'step.sear.1.acyl': 'The catalyst {cat} removes Cl⁻ from the acyl chloride, giving the acylium ion {E} and {X}.',
+      'step.sear.1.hal': 'The catalyst {cat} polarizes the halogen molecule, giving a strongly positive {E} and {X}.',
+      'step.sear.1.so3': 'H₂SO₄ protonates SO₃, giving the electrophile {E} and {X}.',
+      'step.sear.2': 'The π electrons of the ring attack {E}. The ring loses its aromaticity and becomes a positive arenium ion (σ-complex). This is the slow step.',
+      'step.sear.3': '{X} removes the H⁺ from the carbon that carries the new group. The ring becomes aromatic again, H–X forms and {cat} is given back.',
+      'step.sear.3.so3': '{X} removes the H⁺ from the carbon that carries the new group. The ring becomes aromatic again and H₂SO₄ is given back.',
+      'step.sear.op': 'The {group} group already on the ring sends the new group to the ortho (2) and para (4) positions.',
+      'step.sear.meta': 'The –NO₂ group already on the ring sends the new group to the meta (3) position.',
       'catalyst.dehydration': 'H⁺ turns the –OH group into –OH₂⁺. Water is a much better leaving group than OH⁻, so the alcohol can lose it.',
       'catalyst.ester': 'H⁺ attaches to the C=O oxygen, which makes the carbon more positive and easier for the alcohol to attack.',
       'catalyst.hbrConsumed': 'HBr is a reagent here, not a catalyst: its H⁺ ends up in water and its Br ends up in the product, so it is used up.',
@@ -455,7 +477,8 @@
     fr: {
       'rp.title': 'Prédicteur de réactions', 'rp.intro': 'Choisis une molécule de départ et un réactif. L’application donne le produit le plus probable, le mécanisme, chaque étape et le rôle d’un éventuel catalyseur.',
       'rp.substrate': 'Molécule de départ', 'rp.reagent': 'Réactif', 'rp.heat': 'Chauffage (Δ)',
-      'rp.g.halide': 'Halogénoalcanes', 'rp.g.alcohol': 'Alcools', 'rp.g.acid': 'Acides carboxyliques',
+      'rp.g.halide': 'Halogénoalcanes', 'rp.g.alcohol': 'Alcools', 'rp.g.acid': 'Acides carboxyliques', 'rp.g.aromatic': 'Cycles aromatiques (benzène…)',
+      'rp.m.sear': 'Substitution électrophile aromatique (SEAr)',
       'rp.major': 'Produit majoritaire', 'rp.minor': 'Produit minoritaire', 'rp.by': 'Se forme aussi', 'rp.mechanism': 'Mécanisme',
       'rp.why': 'Pourquoi', 'rp.workflow': 'Déroulement, étape par étape', 'rp.watch': 'Voir l’animation {m}',
       'rp.animNote': 'L’animation utilise Br comme groupe partant et des boules simples pour les groupes CH₃.',
@@ -466,6 +489,27 @@
       'rp.cat.title': 'Catalyseur', 'rp.cat.none': 'Aucun catalyseur n’est nécessaire pour cette réaction.',
       'rp.cat.facts': 'Il entre à l’étape {a} et est rendu à l’étape {b}. Il n’est pas consommé : une petite quantité suffit. Il accélère la réaction en offrant un chemin d’énergie d’activation plus basse.',
       'catalyst.h2so4': 'acide sulfurique (source de H⁺)',
+      'catalyst.alcl3': 'chlorure d’aluminium (acide de Lewis)', 'catalyst.febr3': 'bromure de fer(III) (acide de Lewis)', 'catalyst.fecl3': 'chlorure de fer(III) (acide de Lewis)',
+      'catalyst.fc': 'AlCl₃ arrache le Cl du réactif et laisse un carbone positif (l’électrophile) assez fort pour attaquer le cycle benzénique très stable.',
+      'catalyst.halogen': 'L’halogénure de fer tire sur un atome d’halogène, ce qui rend l’autre très positif : le cycle peut alors l’attaquer.',
+      'catalyst.sulfonation': 'H₂SO₄ donne un H⁺ à SO₃ et forme l’électrophile très réactif SO₃H⁺.',
+      'why.sear': 'Le cycle benzénique est très stable (aromatique). Il garde son cycle en échangeant un H contre le nouveau groupe : substitution, pas addition.',
+      'why.dir.none': 'Les six positions du benzène sont identiques : il n’y a qu’un seul produit.',
+      'why.dir.op': 'Le groupe {group} enrichit le cycle en électrons : il réagit plus vite que le benzène et le nouveau groupe se place en ortho ou para. Para est majoritaire car ortho est plus encombré.',
+      'why.dir.strong': 'Le groupe –OCH₃ enrichit fortement le cycle en électrons : réaction très rapide, nouveau groupe en ortho ou para (para majoritaire).',
+      'why.dir.meta': 'Le groupe –NO₂ appauvrit le cycle en électrons : réaction plus lente, et le nouveau groupe se place en méta.',
+      'why.fcDeactivated': 'Les réactions de Friedel–Crafts ne marchent pas sur les cycles portant un groupe très attracteur comme –NO₂ : le cycle est trop pauvre en électrons pour attaquer.',
+      'why.fcPoly': 'Limite : le produit est plus réactif que le départ, un deuxième groupe peut donc s’ajouter (polyalkylation). Un excès de benzène limite ce problème.',
+      'why.fcAcyl': 'Le groupe C=O rend le produit moins réactif : la réaction s’arrête proprement après un seul groupe.',
+      'step.sear.1.alkyl': 'Le catalyseur {cat} arrache Cl⁻ au réactif, ce qui donne l’électrophile {E} et {X}.',
+      'step.sear.1.acyl': 'Le catalyseur {cat} arrache Cl⁻ au chlorure d’acyle, ce qui donne l’ion acylium {E} et {X}.',
+      'step.sear.1.hal': 'Le catalyseur {cat} polarise la molécule d’halogène, ce qui donne un {E} très positif et {X}.',
+      'step.sear.1.so3': 'H₂SO₄ protone SO₃, ce qui donne l’électrophile {E} et {X}.',
+      'step.sear.2': 'Les électrons π du cycle attaquent {E}. Le cycle perd son aromaticité et devient un ion arénium positif (complexe σ). C’est l’étape lente.',
+      'step.sear.3': '{X} arrache le H⁺ du carbone qui porte le nouveau groupe. Le cycle redevient aromatique, H–X se forme et {cat} est rendu.',
+      'step.sear.3.so3': '{X} arrache le H⁺ du carbone qui porte le nouveau groupe. Le cycle redevient aromatique et H₂SO₄ est rendu.',
+      'step.sear.op': 'Le groupe {group} déjà présent envoie le nouveau groupe en ortho (2) et para (4).',
+      'step.sear.meta': 'Le groupe –NO₂ déjà présent envoie le nouveau groupe en méta (3).',
       'catalyst.dehydration': 'H⁺ transforme le groupe –OH en –OH₂⁺. L’eau est un bien meilleur groupe partant que OH⁻, donc l’alcool peut la perdre.',
       'catalyst.ester': 'H⁺ se fixe sur l’oxygène du C=O, ce qui rend le carbone plus positif et plus facile à attaquer par l’alcool.',
       'catalyst.hbrConsumed': 'Ici HBr est un réactif, pas un catalyseur : son H⁺ finit dans l’eau et son Br dans le produit, il est donc consommé.',
@@ -540,7 +584,7 @@
 
   function renderPredictor(box) {
     var subSel = h('select', { class: 'input', id: 'rp-sub' });
-    ['halide', 'alcohol', 'acid'].forEach(function (kind) {
+    ['aromatic', 'halide', 'alcohol', 'acid'].forEach(function (kind) {
       var g = h('optgroup', { label: t('rp.g.' + kind) });
       O.substrates.filter(function (s) { return s.kind === kind; }).forEach(function (s) {
         g.appendChild(h('option', { value: s.id, text: trName(s) + ' — ' + s.formula.replace(/(\d)/g, function (d) { return '₀₁₂₃₄₅₆₇₈₉'[d]; }) }));
@@ -590,13 +634,13 @@
       }
 
       var why = h('ul', { class: 'small' });
-      r.why.forEach(function (w) { why.appendChild(h('li', { text: t(w) })); });
+      r.why.forEach(function (w) { why.appendChild(h('li', { text: t(w, { group: sub.group || '' }) })); });
       out.appendChild(h('div', null, [h('h3', { text: t('rp.why') }), why]));
 
       if (r.steps.length) {
         var ol = h('ol', { class: 'steps rp-steps' });
         r.steps.forEach(function (st) {
-          var v = st.vars ? { nuc: I18N.getLang() === 'fr' ? st.vars.nuc_fr : st.vars.nuc } : null;
+          var v = st.vars ? Object.assign({}, st.vars, { nuc: I18N.getLang() === 'fr' ? st.vars.nuc_fr : st.vars.nuc }) : null;
           ol.appendChild(h('li', { class: st.cat ? 'rp-cat-step' : null }, [
             st.cat ? h('span', { class: 'badge rp-cat-badge', text: t('rp.cat.' + st.cat) }) : null,
             ' ' + t(st.key, v)
@@ -619,6 +663,16 @@
         catBox.appendChild(h('p', { class: 'small muted', text: t('rp.cat.none') }));
       }
       out.appendChild(catBox);
+
+      // Quantity calculator for this reaction (10 g of the starting molecule as an example).
+      if (r.calc) {
+        try {
+          var bal = Chem.balance(r.calc.reactants, r.calc.products);
+          var defaults = {};
+          defaults[r.calc.reactants[0]] = 10;
+          out.appendChild(UI.calculator(bal, { defaults: defaults, main: r.calc.products[0] }));
+        } catch (e) { /* every listed reaction balances (checked by the tests) */ }
+      }
 
       if (r.animate) {
         out.appendChild(h('div', { class: 'row' }, [
@@ -644,9 +698,9 @@
       h('label', { class: 'row small', for: 'rp-heat' }, [heat, t('rp.heat')]),
       out
     ]));
-    subSel.value = '2-C4H9Br';
+    subSel.value = 'C6H6';
     fillReagents();
-    reSel.value = 'NaOH';
+    reSel.value = 'CH3Cl_AlCl3';
     update();
   }
 

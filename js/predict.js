@@ -159,14 +159,69 @@
     return out;
   }
 
+  var CATALYSTS = {
+    AlCl3: { name: 'catalyst.alcl3', role: 'catalyst.fc' },
+    FeBr3: { name: 'catalyst.febr3', role: 'catalyst.halogen' },
+    FeCl3: { name: 'catalyst.fecl3', role: 'catalyst.halogen' },
+    H2SO4: { name: 'catalyst.h2so4', role: 'catalyst.sulfonation' }
+  };
+
+  // Electrophilic aromatic substitution (Friedel–Crafts, halogenation, sulfonation).
+  function predictAromatic(sub, reagent) {
+    var out = { why: [], steps: [], catalyst: null, byproducts: [] };
+    if (reagent.fc && (sub.ring === 'deactivated')) {
+      out.mech = 'none';
+      out.why.push('why.fcDeactivated');
+      return out;
+    }
+    var products = sub.ar[reagent.E];
+    out.mech = 'sear';
+    out.major = products[0];
+    out.minor = products[1] || null;
+    out.byproducts = reagent.hx ? [reagent.hx] : [];
+    var c = CATALYSTS[reagent.cat];
+    out.catalyst = { formula: reagent.cat, name: c.name, role: c.role, regenerated: true };
+    out.why.push('why.sear');
+    out.why.push(sub.director === 'none' ? 'why.dir.none' : sub.director === 'meta' ? 'why.dir.meta' : sub.ring === 'strong' ? 'why.dir.strong' : 'why.dir.op');
+    if (reagent.fc === 'alkyl') out.why.push('why.fcPoly');
+    if (reagent.fc === 'acyl') out.why.push('why.fcAcyl');
+    var v = { E: reagent.eIon, cat: reagent.cat.replace(/(\d)/g, function (d) { return '₀₁₂₃₄₅₆₇₈₉'[d]; }), X: reagent.counter, group: sub.group || '' };
+    out.steps.push({ key: reagent.E === 'SO3H' ? 'step.sear.1.so3' : reagent.fc === 'acyl' ? 'step.sear.1.acyl' : reagent.fc ? 'step.sear.1.alkyl' : 'step.sear.1.hal', vars: v, cat: 'enter' });
+    out.steps.push({ key: 'step.sear.2', vars: v });
+    out.steps.push({ key: reagent.hx ? 'step.sear.3' : 'step.sear.3.so3', vars: v, cat: 'regen' });
+    if (sub.director !== 'none') out.steps.push({ key: sub.director === 'meta' ? 'step.sear.meta' : 'step.sear.op', vars: v });
+    return out;
+  }
+
+  // Balanced-equation ingredients for the quantity calculator (catalysts and solvents excluded).
+  function calcEquation(out) {
+    var sub = out.substrate, r = out.reagent;
+    if (!out.major) return null;
+    var p = out.major[0].replace(/=/g, '');
+    var reagentUsed = !(r.type === 'acidCat' || (r.type === 'weak' && /^e/.test(out.mech)));
+    var products = [p];
+    if (sub.kind === 'halide') {
+      if (r.type === 'weak') products.push('HBr');
+      else {
+        if (/^e/.test(out.mech)) products.push(r.elimBy);
+        products.push(r.salt);
+      }
+    } else {
+      out.byproducts.forEach(function (b) { products.push(b); });
+    }
+    return { reactants: [sub.formula.replace(/=/g, '')].concat(reagentUsed ? [r.formula] : []), products: products };
+  }
+
   function predict(substrateId, reagentId, heat) {
     var sub = find(ORGANIC.substrates, substrateId);
     var reagent = find(ORGANIC.reagents, reagentId);
     if (!sub || !reagent) return null;
     var out = sub.kind === 'halide' ? predictHalide(sub, reagent, !!heat) :
-      sub.kind === 'alcohol' ? predictAlcohol(sub, reagent) : predictAcid(sub, reagent);
+      sub.kind === 'alcohol' ? predictAlcohol(sub, reagent) :
+      sub.kind === 'aromatic' ? predictAromatic(sub, reagent) : predictAcid(sub, reagent);
     out.substrate = sub;
     out.reagent = reagent;
+    out.calc = calcEquation(out);
     return out;
   }
 

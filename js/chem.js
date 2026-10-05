@@ -367,6 +367,34 @@
   // French "de" with elision: de sodium, d'aluminium, d'hydrogène.
   function de(word) { return /^[aeéèêiïoôuyh]/i.test(word) ? 'd’' + word : 'de ' + word; }
 
+  // ---------- Quantities (stoichiometry) ----------
+
+  // Given a balanced equation and the mass in grams of each reactant (missing
+  // or empty = in excess), returns moles, the limiting reactant, the
+  // theoretical mass of each product and what is left of the others.
+  function stoichiometry(balanced, masses) {
+    var reactants = balanced.reactants.map(function (s) {
+      var M = molarMass(parseFormula(s.formula).counts);
+      var m = masses[s.formula];
+      var given = typeof m === 'number' && isFinite(m) && m > 0;
+      return { formula: s.formula, coef: s.coef, M: M, mass: given ? m : null, n: given ? m / M : null };
+    });
+    var given = reactants.filter(function (r) { return r.n !== null; });
+    if (!given.length) return null;
+    var limiting = given.reduce(function (best, r) { return r.n / r.coef < best.n / best.coef ? r : best; });
+    var extent = limiting.n / limiting.coef;
+    reactants.forEach(function (r) {
+      r.needed = extent * r.coef;
+      r.left = r.n === null ? null : r.n - r.needed;
+      r.leftMass = r.left === null ? null : r.left * r.M;
+    });
+    var products = balanced.products.map(function (s) {
+      var M = molarMass(parseFormula(s.formula).counts);
+      return { formula: s.formula, coef: s.coef, M: M, n: extent * s.coef, mass: extent * s.coef * M };
+    });
+    return { reactants: reactants, products: products, limiting: limiting, extent: extent };
+  }
+
   // ---------- Ions & ionic formulas ----------
 
   var CATIONS = COMPOUNDS.cations;
@@ -579,6 +607,7 @@
     balanceText: balanceText,
     equationToString: equationToString,
     atomTally: atomTally,
+    stoichiometry: stoichiometry,
     ionicFormula: ionicFormula,
     ionicName: ionicName,
     ionName: ionName,

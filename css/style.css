@@ -396,3 +396,12 @@ footer { max-width: 1280px; margin: 0 auto; padding: 16px; color: var(--muted); 
 .rp-cat-step { background: var(--surface-2); border-radius: 8px; padding: 4px 8px; }
 .rp-cat-badge { background: var(--warn); color: var(--surface); }
 .rp-catalyst { padding: 12px; border-radius: 10px; border: 1px dashed var(--warn); }
+
+/* ---------- Quantity calculator ---------- */
+.calc { padding: 12px; border-radius: 10px; background: var(--surface-2); }
+.calc-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 10px; }
+.calc-inputs label { display: flex; flex-direction: column; gap: 4px; font-size: .85rem; }
+.calc-step { padding: 8px 0; border-top: 1px solid var(--border); }
+.calc-step h4 { margin: 0 0 4px; font-size: .9rem; }
+.calc-line { font-size: .9rem; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.calc-answer { color: var(--accent); font-size: 1.05rem; }

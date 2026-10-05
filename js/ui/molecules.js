@@ -131,6 +131,7 @@
       h('div', null, [h('h3', { text: 'Percent composition by mass' }), bar, h('div', { class: 'scroll-x' }, table)])
     ]);
 
+    right.appendChild(converter(text.replace(/\s+/g, ''), comp));
     out.appendChild(h('div', { class: 'grid-2' }, [left, right]));
 
     var model = modelFor(comp.counts);
@@ -139,6 +140,51 @@
       out.appendChild(stage);
       showModel(stage, model);
     }
+  }
+
+  var I18N = root.I18N;
+  I18N.add({
+    en: {
+      'conv.title': 'Grams → moles → particles', 'conv.mass': 'Mass (g)',
+      'conv.n': 'n = m ÷ M = {m} g ÷ {M} g/mol = <b>{n} mol</b>',
+      'conv.N': 'Number of {unit}s = n × 6.022 × 10²³ = <b>{N}</b>',
+      'conv.atoms': 'Number of atoms = {N} × {a} atoms each = <b>{A}</b>'
+    },
+    fr: {
+      'conv.title': 'Grammes → moles → particules', 'conv.mass': 'Masse (g)',
+      'conv.n': 'n = m ÷ M = {m} g ÷ {M} g/mol = <b>{n} mol</b>',
+      'conv.N': 'Nombre d’entités = n × 6,022 × 10²³ = <b>{N}</b>',
+      'conv.atoms': 'Nombre d’atomes = {N} × {a} atomes chacun = <b>{A}</b>'
+    }
+  });
+
+  function sci(x) {
+    var e = Math.floor(Math.log10(x));
+    return (x / Math.pow(10, e)).toFixed(3) + ' × 10' + String(e).split('').map(function (c) { return c === '-' ? '⁻' : '⁰¹²³⁴⁵⁶⁷⁸⁹'[c]; }).join('');
+  }
+
+  // Converts a mass of the compound into moles, particles and atoms, with the working shown.
+  function converter(formula, comp) {
+    var inp = h('input', { class: 'input', type: 'number', min: '0', step: 'any', id: 'conv-mass', value: '10', inputmode: 'decimal' });
+    var out = h('div', { 'aria-live': 'polite' });
+    function update() {
+      var m = parseFloat(inp.value);
+      out.innerHTML = '';
+      if (!(m > 0)) return;
+      var n = m / comp.molarMass, N = n * 6.02214076e23, A = N * comp.atoms;
+      [I18N.t('conv.n', { m: UI.fmt(m, 3), M: UI.fmt(comp.molarMass, 3), n: UI.fmt(n, 4) }),
+       I18N.t('conv.N', { unit: 'molecule', N: sci(N) }),
+       I18N.t('conv.atoms', { N: sci(N), a: comp.atoms, A: sci(A) })].forEach(function (l) {
+        out.appendChild(h('div', { class: 'calc-line', html: l }));
+      });
+    }
+    inp.addEventListener('input', update);
+    update();
+    return h('div', { class: 'calc' }, [
+      h('h3', { text: I18N.t('conv.title') }),
+      h('label', { for: 'conv-mass', class: 'row small' }, [I18N.t('conv.mass') + ' ', inp]),
+      out
+    ]);
   }
 
   function typeLabel(type, hasMetal) {

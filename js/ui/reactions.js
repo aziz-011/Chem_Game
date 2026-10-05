@@ -211,8 +211,16 @@
       h('p', { text: rx.explain }),
       rx.catalyst ? catalystBox(rx.catalyst, b) : null,
       h('p', { class: 'small', html: '<b>Products:</b> ' + names }),
-      h('details', null, [h('summary', { text: 'Check the atom count (law of conservation of mass)' }), tallyTable(b)])
+      h('details', null, [h('summary', { text: 'Check the atom count (law of conservation of mass)' }), tallyTable(b)]),
+      UI.calculator(b, { defaults: exampleMasses(b) })
     ]));
+  }
+
+  // Example starting masses: 10 g of each reactant.
+  function exampleMasses(b) {
+    var m = {};
+    b.reactants.forEach(function (r) { m[r.formula] = 10; });
+    return m;
   }
 
   // ---------- Balancer ----------
@@ -249,6 +257,7 @@
       if (note) out.appendChild(h('p', { class: 'small muted', text: note }));
       out.appendChild(h('details', { open: true }, [h('summary', { text: 'Atom count on each side' }), tallyTable(b)]));
       out.appendChild(h('p', { class: 'small muted', text: 'Coefficients (big numbers) multiply whole molecules. Never change the small subscripts — that would make a different substance!' }));
+      out.appendChild(UI.calculator(b, { defaults: exampleMasses(b) }));
     } catch (err) {
       out.appendChild(h('p', { class: 'error', text: err.message }));
     }
