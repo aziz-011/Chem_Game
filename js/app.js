@@ -2,7 +2,7 @@
 (function (root) {
   'use strict';
   var UI = root.UI;
-  var VIEWS = ['table', 'compare', 'molecules', 'naming', 'reactions'];
+  var VIEWS = ['table', 'compare', 'molecules', 'mechanisms', 'naming', 'reactions'];
 
   function route() {
     var name = location.hash.replace('#', '') || 'table';

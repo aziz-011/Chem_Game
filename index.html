@@ -16,6 +16,7 @@
         <a class="tab" href="#table" data-view="table" data-i18n="nav.table">Periodic Table</a>
         <a class="tab" href="#compare" data-view="compare" data-i18n="nav.compare">Compare Atoms</a>
         <a class="tab" href="#molecules" data-view="molecules" data-i18n="nav.molecules">Molecules</a>
+        <a class="tab" href="#mechanisms" data-view="mechanisms" data-i18n="nav.mechanisms">Mechanisms</a>
         <a class="tab" href="#naming" data-view="naming" data-i18n="nav.naming">Naming</a>
         <a class="tab" href="#reactions" data-view="reactions" data-i18n="nav.reactions">Reaction Lab</a>
       </nav>
@@ -89,7 +90,15 @@
         <h3 data-i18n="mol.galleryTitle">3D Model Gallery</h3>
         <p class="small muted" data-i18n="mol.galleryHint">Drag to rotate. Atom colors follow the standard CPK scheme (C black, O red, H white, N blue…).</p>
         <div class="gallery" id="mol-gallery"></div>
+        <p class="small" style="margin-top:12px"><a href="#mechanisms" data-i18n="mol.mechLink">See how organic molecules react (SN1 / SN2) →</a></p>
       </div>
+    </section>
+
+    <!-- Mechanisms -->
+    <section class="view" id="view-mechanisms" aria-labelledby="h-mech">
+      <h2 id="h-mech" data-i18n="mech.title">Reaction Mechanisms: SN1 and SN2</h2>
+      <p class="intro" data-i18n="mech.intro">Watch a nucleophile replace a leaving group, atom by atom.</p>
+      <div id="mech-root"></div>
     </section>
 
     <!-- Naming -->
@@ -160,6 +169,7 @@
   <script src="js/data/compounds.js"></script>
   <script src="js/data/molecules.js"></script>
   <script src="js/data/reactions.js"></script>
+  <script src="js/data/mechanisms.js"></script>
   <script src="js/data/names-fr.js"></script>
   <script src="js/i18n.js"></script>
   <script src="js/chem.js"></script>
@@ -169,6 +179,7 @@
   <script src="js/ui/molecules.js"></script>
   <script src="js/ui/naming.js"></script>
   <script src="js/ui/reactions.js"></script>
+  <script src="js/ui/mechanisms.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

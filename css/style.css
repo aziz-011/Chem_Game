@@ -10,6 +10,8 @@
   --on-accent: #ffffff;
   --cmp-a: #0f8b7d;
   --cmp-b: #e0703a;
+  --arrow: #d6336c;
+  --bond: #8f99a8;
   --good: #1f9d55;
   --good-soft: #dcf5e7;
   --bad: #d64545;
@@ -44,6 +46,10 @@
     --on-accent: #062320;
     --cmp-a: #3cc9b6;
     --cmp-b: #f29560;
+  --arrow: #ff6b9a;
+  --bond: #8794a3;
+    --arrow: #ff6b9a;
+    --bond: #8794a3;
     --good: #4cd38a;
     --good-soft: #173a29;
     --bad: #ff7b7b;
@@ -65,6 +71,10 @@
     --on-accent: #062320;
     --cmp-a: #3cc9b6;
     --cmp-b: #f29560;
+  --arrow: #ff6b9a;
+  --bond: #8794a3;
+    --arrow: #ff6b9a;
+    --bond: #8794a3;
     --good: #4cd38a;
     --good-soft: #173a29;
     --bad: #ff7b7b;
@@ -75,6 +85,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
@@ -350,3 +361,21 @@ footer { max-width: 1280px; margin: 0 auto; padding: 16px; color: var(--muted); 
 }
 .lang-select { margin-left: auto; padding: 6px 8px; font-size: .9rem; }
 .lang-select + .theme-btn { margin-left: 0; }
+
+/* ---------- Mechanisms ---------- */
+.mech-layout { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 900px) { .mech-layout { grid-template-columns: minmax(0, 1fr); } }
+.mech-viewer { aspect-ratio: 660 / 380; max-height: none; }
+.mech-bond { stroke: var(--bond); }
+.mech-arrow { fill: none; stroke: var(--arrow); stroke-width: 2.5; }
+.mech-arrow-head { fill: var(--arrow); }
+.mech-charge, .mech-ts { fill: var(--text); }
+.mech-caption { min-height: 4.5em; font-size: 1.02rem; margin-bottom: 0; }
+.mech-energy { width: 100%; height: auto; display: block; }
+.mech-axis { stroke: var(--muted); stroke-width: 1.5; }
+.mech-axis-text, .mech-mark { fill: var(--muted); font-size: 11px; }
+.mech-curve { fill: none; stroke: var(--accent); stroke-width: 3; }
+.mech-marker { fill: var(--cmp-b); stroke: var(--surface); stroke-width: 2; }
+.mech-table th:first-child { white-space: nowrap; }
+.mech-table td { font-size: .85rem; min-width: 140px; }
+.pred-result { font-size: 1.6rem; font-weight: 800; color: var(--accent); }

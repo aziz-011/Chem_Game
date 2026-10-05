@@ -63,10 +63,10 @@
       'mol.placeholder': 'e.g. H2O, CO2, Ca(OH)2, C6H12O6', 'mol.analyze': 'Analyze', 'mol.formulaAria': 'Chemical formula',
       'mol.galleryTitle': '3D Model Gallery',
       'mol.galleryHint': 'Drag to rotate. Atom colors follow the standard CPK scheme (C grey, O red, H white, N blue…).',
-      'mol.mechLink': 'See how organic molecules react (SN1 / SN2) →',
+      'mol.mechLink': 'See how organic molecules react (SN1, SN2, E1, E2) →',
 
-      'mech.title': 'Reaction Mechanisms: SN1 and SN2',
-      'mech.intro': 'Watch a nucleophile replace a leaving group, atom by atom. Pick a substrate, press play, and drag the model to look from any side.',
+      'mech.title': 'Reaction Mechanisms: SN1, SN2, E1, E2',
+      'mech.intro': 'Watch substitution and elimination happen atom by atom. Pick a mechanism, press play, and drag the model to look from any side.',
 
       'naming.title': 'Naming Compounds', 'naming.intro': 'Learn the rules, build ionic compounds from ions, and test yourself.',
       'naming.tab.name': 'Name a formula', 'naming.tab.build': 'Ion builder', 'naming.tab.quiz': 'Quiz', 'naming.tab.rules': 'Rules & ions',
@@ -103,10 +103,10 @@
       'mol.placeholder': 'ex. H2O, CO2, Ca(OH)2, C6H12O6', 'mol.analyze': 'Analyser', 'mol.formulaAria': 'Formule chimique',
       'mol.galleryTitle': 'Galerie de modèles 3D',
       'mol.galleryHint': 'Fais glisser pour tourner. Les couleurs suivent le code CPK (C gris, O rouge, H blanc, N bleu…).',
-      'mol.mechLink': 'Voir comment réagissent les molécules organiques (SN1 / SN2) →',
+      'mol.mechLink': 'Voir comment réagissent les molécules organiques (SN1, SN2, E1, E2) →',
 
-      'mech.title': 'Mécanismes réactionnels : SN1 et SN2',
-      'mech.intro': 'Regarde un nucléophile remplacer un groupe partant, atome par atome. Choisis un substrat, lance l’animation et fais tourner le modèle.',
+      'mech.title': 'Mécanismes réactionnels : SN1, SN2, E1, E2',
+      'mech.intro': 'Regarde une substitution ou une élimination se produire atome par atome. Choisis un mécanisme, lance l’animation et fais tourner le modèle.',
 
       'naming.title': 'Nommer les composés', 'naming.intro': 'Apprends les règles, construis des composés ioniques et teste-toi.',
       'naming.tab.name': 'Nommer une formule', 'naming.tab.build': 'Constructeur d’ions', 'naming.tab.quiz': 'Quiz', 'naming.tab.rules': 'Règles et ions',

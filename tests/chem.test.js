@@ -96,3 +96,16 @@ test('quiz compounds and 3D models are valid', () => {
     if (m.kind !== 'ionic') assert.equal(Chem.hillKey(counts), Chem.hillKey(Chem.parseFormula(m.formula).counts), m.formula);
   }
 });
+
+test('mechanism frames are complete and consistent', () => {
+  const { list } = require('../js/data/mechanisms.js');
+  for (const m of list) {
+    const ids = m.atoms.map((a) => a.id);
+    m.frames.forEach((f, i) => {
+      assert.deepEqual(Object.keys(f.pos).sort(), ids.slice().sort(), `${m.key} frame ${i} positions`);
+      for (const b of f.bonds) assert.ok(ids.includes(b[0]) && ids.includes(b[1]), `${m.key} frame ${i} bond ${b}`);
+      for (const a of f.arrows || []) for (const r of [].concat(a.from, a.to)) assert.ok(ids.includes(r), `${m.key} arrow ${r}`);
+      if (i) assert.ok(f.t >= m.frames[i - 1].t, `${m.key} energy goes forward`);
+    });
+  }
+});
