@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ChemLab — Learn Chemistry</title>
+  <meta name="description" content="Interactive chemistry for students: periodic table, comparing atoms, molecule composition, naming compounds and a virtual reaction lab.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%234b5cf0'/><text x='50' y='66' font-size='48' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'>Cl</text></svg>">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-inner">
+      <a class="brand" href="#table"><span class="brand-logo">CL</span> ChemLab</a>
+      <nav class="tabs" aria-label="Sections">
+        <a class="tab" href="#table" data-view="table">Periodic Table</a>
+        <a class="tab" href="#compare" data-view="compare">Compare Atoms</a>
+        <a class="tab" href="#molecules" data-view="molecules">Molecules</a>
+        <a class="tab" href="#naming" data-view="naming">Naming</a>
+        <a class="tab" href="#reactions" data-view="reactions">Reaction Lab</a>
+      </nav>
+      <button class="theme-btn" id="theme-btn" type="button" aria-label="Toggle dark mode">◐</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Periodic table -->
+    <section class="view" id="view-table" aria-labelledby="h-table">
+      <h2 id="h-table">The Periodic Table</h2>
+      <p class="intro">Click any element to see what its atom is made of. Use “Color by” to discover the patterns (trends) across the table.</p>
+      <div class="pt-toolbar">
+        <input class="input" id="pt-search" type="search" placeholder="Search name, symbol or number…" aria-label="Search elements">
+        <label class="row small">Color by
+          <select class="input" id="pt-color">
+            <option value="category">Element family</option>
+            <option value="phase">State at room temperature</option>
+            <option value="block">Block (s, p, d, f)</option>
+            <option value="en">Electronegativity</option>
+            <option value="radius">Atomic radius</option>
+            <option value="ie1">Ionization energy</option>
+            <option value="mass">Atomic mass</option>
+            <option value="melt">Melting point</option>
+            <option value="density">Density</option>
+          </select>
+        </label>
+      </div>
+      <div class="pt-layout">
+        <div>
+          <div class="pt-wrap"><div class="ptable" id="ptable" role="grid" aria-label="Periodic table"></div></div>
+          <div id="pt-legend"></div>
+          <p class="small muted" id="pt-trend"></p>
+        </div>
+        <aside class="card element-panel" id="element-panel" aria-live="polite"></aside>
+      </div>
+    </section>
+
+    <!-- Compare atoms -->
+    <section class="view" id="view-compare" aria-labelledby="h-compare">
+      <h2 id="h-compare">Compare Two Atoms</h2>
+      <p class="intro">Pick two elements and see how their atoms differ: protons, electrons, size, and how strongly they hold on to electrons.</p>
+      <div class="card stack">
+        <div class="compare-pickers">
+          <label>Element A <select class="input" id="cmp-a" style="width:100%"></select></label>
+          <div class="vs">vs</div>
+          <label>Element B <select class="input" id="cmp-b" style="width:100%"></select></label>
+        </div>
+        <div class="row small" id="cmp-presets"></div>
+      </div>
+      <div id="cmp-out" class="stack" style="margin-top:16px"></div>
+    </section>
+
+    <!-- Molecules -->
+    <section class="view" id="view-molecules" aria-labelledby="h-mol">
+      <h2 id="h-mol">Molecule Explorer</h2>
+      <p class="intro">Type a chemical formula to see its name, which atoms it contains, its molar mass and percent composition.</p>
+      <div class="card stack">
+        <form class="formula-bar" id="mol-form">
+          <input class="input" id="mol-input" placeholder="e.g. H2O, CO2, Ca(OH)2, C6H12O6" autocomplete="off" spellcheck="false" aria-label="Chemical formula">
+          <button class="btn primary" type="submit">Analyze</button>
+        </form>
+        <div class="row small" id="mol-examples"></div>
+      </div>
+      <div id="mol-out" style="margin-top:16px"></div>
+      <div class="card" style="margin-top:16px">
+        <h3>3D Model Gallery</h3>
+        <p class="small muted">Drag to rotate. Atom colors follow the standard CPK scheme (C black, O red, H white, N blue…).</p>
+        <div class="gallery" id="mol-gallery"></div>
+      </div>
+    </section>
+
+    <!-- Naming -->
+    <section class="view" id="view-naming" aria-labelledby="h-naming">
+      <h2 id="h-naming">Naming Compounds</h2>
+      <p class="intro">Learn the rules, build ionic compounds from ions, and test yourself.</p>
+      <div class="subtabs" id="naming-tabs">
+        <button class="chip active" data-sub="name">Name a formula</button>
+        <button class="chip" data-sub="build">Ion builder</button>
+        <button class="chip" data-sub="quiz">Quiz</button>
+        <button class="chip" data-sub="rules">Rules &amp; ions</button>
+      </div>
+      <div id="naming-name" class="naming-sub"></div>
+      <div id="naming-build" class="naming-sub" hidden></div>
+      <div id="naming-quiz" class="naming-sub" hidden></div>
+      <div id="naming-rules" class="naming-sub" hidden></div>
+    </section>
+
+    <!-- Reactions -->
+    <section class="view" id="view-reactions" aria-labelledby="h-rx">
+      <h2 id="h-rx">Reaction Lab</h2>
+      <p class="intro">Pick one or two chemicals from the shelf and mix them. Watch what happens, then see the balanced equation and why it works.</p>
+      <div class="lab">
+        <div class="card stack">
+          <div class="row" style="justify-content:space-between">
+            <h3 style="margin:0">Chemical shelf</h3>
+            <input class="input small" id="shelf-filter" type="search" placeholder="Filter…" aria-label="Filter chemicals" style="width:140px">
+          </div>
+          <div class="shelf" id="shelf"></div>
+          <div class="row">
+            <button class="btn primary" id="mix-btn" type="button" disabled>Mix!</button>
+            <button class="btn" id="clear-btn" type="button">Clear</button>
+            <button class="btn" id="random-btn" type="button">Surprise me</button>
+          </div>
+        </div>
+        <div class="card bench">
+          <div class="small muted" id="bench-label">Pick chemicals to start</div>
+          <div class="beaker-wrap" id="beaker-wrap">
+            <div class="beaker"><div class="liquid" id="liquid"></div></div>
+            <div class="fx" id="fx"></div>
+          </div>
+          <div id="rx-result" style="width:100%"></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <h3>Equation balancer</h3>
+        <p class="small muted">Type any equation using -> or =. Type just a fuel + O2 (like C4H10 + O2) and the combustion products are filled in for you.</p>
+        <form class="formula-bar" id="bal-form">
+          <input class="input" id="bal-input" placeholder="e.g. Fe + O2 -> Fe2O3" autocomplete="off" spellcheck="false" aria-label="Chemical equation">
+          <button class="btn primary" type="submit">Balance</button>
+        </form>
+        <div class="row small" id="bal-examples" style="margin-top:8px"></div>
+        <div id="bal-out" style="margin-top:12px"></div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <h3>Types of reactions</h3>
+        <div class="types" id="rx-types"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Element data from the open <a href="https://github.com/Bowserinator/Periodic-Table-JSON" rel="noopener">Periodic-Table-JSON</a> dataset (compiled from Wikipedia).
+    Reactions shown are simplified for learning — never try them without a teacher and proper safety equipment.
+  </footer>
+
+  <script src="js/data/elements.js"></script>
+  <script src="js/data/compounds.js"></script>
+  <script src="js/data/molecules.js"></script>
+  <script src="js/data/reactions.js"></script>
+  <script src="js/chem.js"></script>
+  <script src="js/ui/common.js"></script>
+  <script src="js/ui/table.js"></script>
+  <script src="js/ui/compare.js"></script>
+  <script src="js/ui/molecules.js"></script>
+  <script src="js/ui/naming.js"></script>
+  <script src="js/ui/reactions.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

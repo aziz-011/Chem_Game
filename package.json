@@ -1,0 +1,12 @@
+{
+  "name": "chem-game",
+  "version": "1.0.0",
+  "description": "ChemLab — an interactive chemistry learning web app for students",
+  "private": true,
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "test": "node --test tests/*.test.js",
+    "build:data": "python3 scripts/build-elements.py"
+  },
+  "license": "MIT"
+}

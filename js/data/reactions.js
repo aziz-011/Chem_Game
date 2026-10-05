@@ -1,0 +1,130 @@
+// Reactions available on the lab bench. Coefficients are computed by
+// Chem.balance(), so only the unbalanced formulas are listed here.
+// effect: visual cue for the beaker animation
+//   bubbles | flame | flash | precipitate | color | smoke | heat | none
+(function (root) {
+  var REACTIONS = [
+    { reactants: ['H2', 'O2'], products: ['H2O'], type: 'synthesis', energy: 'exothermic', effect: 'flash',
+      condition: 'spark', color: '#9ad7ff',
+      explain: 'Hydrogen burns with oxygen and makes water. A lit splint gives a squeaky "pop" — the classic test for hydrogen gas.' },
+    { reactants: ['Na', 'Cl2'], products: ['NaCl'], type: 'synthesis', energy: 'exothermic', effect: 'flame',
+      color: '#ffe36e',
+      explain: 'Each sodium atom gives one electron to a chlorine atom. The ions Na⁺ and Cl⁻ attract and form table salt — a dangerous metal and a toxic gas become something you eat!' },
+    { reactants: ['Mg', 'O2'], products: ['MgO'], type: 'synthesis', energy: 'exothermic', effect: 'flash',
+      condition: 'heat', color: '#ffffff',
+      explain: 'Magnesium ribbon burns with a blinding white light and leaves white magnesium oxide powder. Mg loses 2 electrons, O gains 2.' },
+    { reactants: ['Fe', 'S'], products: ['FeS'], type: 'synthesis', energy: 'exothermic', effect: 'heat',
+      condition: 'heat', color: '#3b3b3b',
+      explain: 'Heating iron filings with sulfur makes black iron(II) sulfide. Before heating you could separate them with a magnet — after, you cannot: a new compound formed.' },
+    { reactants: ['N2', 'H2'], products: ['NH3'], type: 'synthesis', energy: 'exothermic', effect: 'none',
+      condition: 'high pressure, iron catalyst', color: '#e8f4ff',
+      explain: 'The Haber process makes ammonia for fertilizers. It feeds billions of people, but needs high pressure and a catalyst because the N≡N bond is so strong.' },
+    { reactants: ['NH3', 'HCl'], products: ['NH4Cl'], type: 'synthesis', energy: 'exothermic', effect: 'smoke',
+      color: '#ffffff',
+      explain: 'Two colorless gases meet and form a white smoke of tiny ammonium chloride crystals.' },
+    { reactants: ['Cu', 'O2'], products: ['CuO'], type: 'synthesis', energy: 'exothermic', effect: 'color',
+      condition: 'heat', color: '#222222',
+      explain: 'Shiny copper turns black when heated in air because a layer of copper(II) oxide forms on its surface.' },
+    { reactants: ['Fe', 'O2'], products: ['Fe2O3'], type: 'synthesis', energy: 'exothermic', effect: 'color',
+      condition: 'water, slow', color: '#a0522d',
+      explain: 'Rusting! Iron slowly combines with oxygen (helped by water) to form reddish-brown iron(III) oxide.' },
+
+    { reactants: ['H2O2'], products: ['H2O', 'O2'], type: 'decomposition', energy: 'exothermic', effect: 'bubbles',
+      condition: 'MnO2 catalyst', color: '#f4f9ff',
+      explain: 'Hydrogen peroxide breaks down into water and oxygen gas. A catalyst (manganese dioxide or the enzyme catalase in liver) makes it fizz fast. A glowing splint relights in the oxygen.' },
+    { reactants: ['CaCO3'], products: ['CaO', 'CO2'], type: 'decomposition', energy: 'endothermic', effect: 'heat',
+      condition: 'strong heat', color: '#f5f5f0',
+      explain: 'Limestone (calcium carbonate) breaks down when heated strongly, releasing carbon dioxide and leaving quicklime (CaO). It needs energy, so it is endothermic.' },
+    { reactants: ['H2O'], products: ['H2', 'O2'], type: 'decomposition', energy: 'endothermic', effect: 'bubbles',
+      condition: 'electricity (electrolysis)', color: '#dff1ff',
+      explain: 'Electricity splits water into hydrogen and oxygen. You get twice as much hydrogen gas as oxygen — look at the coefficients!' },
+
+    { reactants: ['CH4', 'O2'], products: ['CO2', 'H2O'], type: 'combustion', energy: 'exothermic', effect: 'flame',
+      condition: 'ignite', color: '#6fa8ff',
+      explain: 'Natural gas burning on a stove. Complete combustion of a hydrocarbon always gives carbon dioxide and water, and releases heat.' },
+    { reactants: ['C3H8', 'O2'], products: ['CO2', 'H2O'], type: 'combustion', energy: 'exothermic', effect: 'flame',
+      condition: 'ignite', color: '#6fa8ff',
+      explain: 'Propane (barbecue gas) burns to carbon dioxide and water. Notice how much oxygen is needed: 5 O2 per propane.' },
+    { reactants: ['C2H5OH', 'O2'], products: ['CO2', 'H2O'], type: 'combustion', energy: 'exothermic', effect: 'flame',
+      condition: 'ignite', color: '#7fb2ff',
+      explain: 'Ethanol burns with a clean blue flame. It is used as a fuel added to gasoline.' },
+    { reactants: ['C6H12O6', 'O2'], products: ['CO2', 'H2O'], type: 'combustion', energy: 'exothermic', effect: 'heat',
+      condition: 'in your cells', color: '#fff4d6',
+      explain: 'Cellular respiration: your body "burns" glucose slowly with oxygen to get energy. It is the reverse of photosynthesis.' },
+    { reactants: ['CO2', 'H2O'], products: ['C6H12O6', 'O2'], type: 'synthesis', energy: 'endothermic', effect: 'bubbles',
+      condition: 'sunlight + chlorophyll', color: '#b6e3a1',
+      explain: 'Photosynthesis: plants use light energy to turn carbon dioxide and water into glucose, releasing oxygen.' },
+
+    { reactants: ['Zn', 'HCl'], products: ['ZnCl2', 'H2'], type: 'single replacement', energy: 'exothermic', effect: 'bubbles',
+      color: '#eef6ff',
+      explain: 'Zinc is more reactive than hydrogen, so it pushes hydrogen out of the acid. The bubbles are hydrogen gas.' },
+    { reactants: ['Mg', 'HCl'], products: ['MgCl2', 'H2'], type: 'single replacement', energy: 'exothermic', effect: 'bubbles',
+      color: '#eef6ff',
+      explain: 'Magnesium fizzes quickly in acid — faster than zinc, because magnesium is higher in the activity series.' },
+    { reactants: ['Fe', 'CuSO4'], products: ['FeSO4', 'Cu'], type: 'single replacement', energy: 'exothermic', effect: 'color',
+      color: '#9fd4a3',
+      explain: 'Iron is more reactive than copper, so it replaces copper in the solution. The blue color fades to pale green and reddish copper coats the iron.' },
+    { reactants: ['Cu', 'AgNO3'], products: ['Cu(NO3)2', 'Ag'], type: 'single replacement', energy: 'exothermic', effect: 'color',
+      color: '#6ea8ff',
+      explain: 'Copper wire in silver nitrate grows shiny silver crystals while the solution turns blue from copper(II) ions.' },
+    { reactants: ['Na', 'H2O'], products: ['NaOH', 'H2'], type: 'single replacement', energy: 'exothermic', effect: 'flame',
+      color: '#f4f9ff',
+      explain: 'Sodium whizzes around on water, fizzing and sometimes catching fire. It makes sodium hydroxide (a base) and hydrogen gas.' },
+    { reactants: ['K', 'H2O'], products: ['KOH', 'H2'], type: 'single replacement', energy: 'exothermic', effect: 'flame',
+      color: '#e6d7ff',
+      explain: 'Potassium is even more reactive than sodium: the hydrogen catches fire immediately with a lilac flame.' },
+    { reactants: ['Ca', 'H2O'], products: ['Ca(OH)2', 'H2'], type: 'single replacement', energy: 'exothermic', effect: 'bubbles',
+      color: '#f7f7f2',
+      explain: 'Calcium reacts steadily with water, making bubbles of hydrogen and cloudy calcium hydroxide.' },
+    { reactants: ['Cl2', 'NaBr'], products: ['NaCl', 'Br2'], type: 'single replacement', energy: 'exothermic', effect: 'color',
+      color: '#e08a2c',
+      explain: 'Chlorine is a more reactive halogen than bromine, so it takes bromine\'s place. The solution turns orange from free bromine.' },
+    { reactants: ['Al', 'Fe2O3'], products: ['Al2O3', 'Fe'], type: 'single replacement', energy: 'exothermic', effect: 'flash',
+      condition: 'ignite', color: '#ff7b2e',
+      explain: 'The thermite reaction! Aluminum steals oxygen from iron oxide so violently that molten iron is produced — used to weld railway tracks.' },
+
+    { reactants: ['AgNO3', 'NaCl'], products: ['AgCl', 'NaNO3'], type: 'double replacement', energy: 'exothermic', effect: 'precipitate',
+      color: '#ffffff',
+      explain: 'The ions swap partners. Silver chloride is insoluble, so a white solid (precipitate) appears. This is the test for chloride ions.' },
+    { reactants: ['Pb(NO3)2', 'KI'], products: ['PbI2', 'KNO3'], type: 'double replacement', energy: 'exothermic', effect: 'precipitate',
+      color: '#ffd400',
+      explain: 'Two colorless solutions make a bright yellow precipitate of lead(II) iodide — the famous "golden rain".' },
+    { reactants: ['BaCl2', 'Na2SO4'], products: ['BaSO4', 'NaCl'], type: 'double replacement', energy: 'exothermic', effect: 'precipitate',
+      color: '#ffffff',
+      explain: 'Barium sulfate is insoluble and forms a white precipitate. This is the test for sulfate ions.' },
+    { reactants: ['CuSO4', 'NaOH'], products: ['Cu(OH)2', 'Na2SO4'], type: 'double replacement', energy: 'exothermic', effect: 'precipitate',
+      color: '#4f9cff',
+      explain: 'A pale blue jelly-like precipitate of copper(II) hydroxide forms. Hydroxide tests can identify metal ions by color.' },
+    { reactants: ['HCl', 'NaOH'], products: ['NaCl', 'H2O'], type: 'neutralization', energy: 'exothermic', effect: 'heat',
+      color: '#f4fff4',
+      explain: 'Acid + base → salt + water. H⁺ from the acid and OH⁻ from the base join to make water, and the solution warms up.' },
+    { reactants: ['H2SO4', 'KOH'], products: ['K2SO4', 'H2O'], type: 'neutralization', energy: 'exothermic', effect: 'heat',
+      color: '#f4fff4',
+      explain: 'Sulfuric acid has two H⁺ to give, so it needs two KOH to be neutralized.' },
+    { reactants: ['NaHCO3', 'CH3COOH'], products: ['CH3COONa', 'H2O', 'CO2'], type: 'acid-carbonate', energy: 'endothermic', effect: 'bubbles',
+      color: '#fffbea',
+      explain: 'Baking soda + vinegar! The acid reacts with the carbonate and releases lots of carbon dioxide bubbles. The mixture actually gets a little colder.' },
+    { reactants: ['CaCO3', 'HCl'], products: ['CaCl2', 'H2O', 'CO2'], type: 'acid-carbonate', energy: 'exothermic', effect: 'bubbles',
+      color: '#f7f7f2',
+      explain: 'Acid on limestone or marble fizzes with carbon dioxide. This is how acid rain damages statues.' }
+  ];
+
+  // Friendly names shown on the reagent shelf.
+  var REAGENTS = {
+    'H2': 'Hydrogen gas', 'O2': 'Oxygen gas', 'N2': 'Nitrogen gas', 'Cl2': 'Chlorine gas', 'Na': 'Sodium',
+    'K': 'Potassium', 'Ca': 'Calcium', 'Mg': 'Magnesium', 'Zn': 'Zinc', 'Fe': 'Iron', 'Cu': 'Copper', 'Al': 'Aluminum',
+    'Au': 'Gold', 'S': 'Sulfur', 'H2O': 'Water', 'H2O2': 'Hydrogen peroxide', 'CaCO3': 'Calcium carbonate (chalk)',
+    'CH4': 'Methane', 'C3H8': 'Propane', 'C2H5OH': 'Ethanol', 'C6H12O6': 'Glucose', 'CO2': 'Carbon dioxide',
+    'HCl': 'Hydrochloric acid', 'H2SO4': 'Sulfuric acid', 'CH3COOH': 'Vinegar (acetic acid)', 'NaOH': 'Sodium hydroxide',
+    'KOH': 'Potassium hydroxide', 'NH3': 'Ammonia', 'NaCl': 'Sodium chloride', 'NaBr': 'Sodium bromide', 'KI': 'Potassium iodide',
+    'AgNO3': 'Silver nitrate', 'CuSO4': 'Copper(II) sulfate', 'Pb(NO3)2': 'Lead(II) nitrate', 'BaCl2': 'Barium chloride',
+    'Na2SO4': 'Sodium sulfate', 'NaHCO3': 'Baking soda', 'Fe2O3': 'Iron(III) oxide (rust)', 'KNO3': 'Potassium nitrate'
+  };
+
+  // Most reactive first. Metals above H displace hydrogen from acids.
+  var ACTIVITY = ['K', 'Na', 'Ca', 'Mg', 'Al', 'Zn', 'Fe', 'Pb', 'H', 'Cu', 'Ag', 'Au'];
+
+  var data = { reactions: REACTIONS, reagents: REAGENTS, activity: ACTIVITY };
+  if (typeof module !== 'undefined' && module.exports) module.exports = data;
+  else root.REACTIONS = data;
+})(this);
