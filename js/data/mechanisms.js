@@ -148,7 +148,60 @@
     { key: 'tertiary', formula: '(CH₃)₃CBr', groups: ['CH₃', 'CH₃', 'CH₃'] }
   ];
 
-  var data = { list: [SN2, SN1, E2, E1], substrates: SUBSTRATES };
+  // Electrophilic aromatic substitution: benzene + CH3Cl with the AlCl3 catalyst (Friedel–Crafts).
+  // The ring lies in the x/y plane; C1 (top) is where the methyl group attaches.
+  function ringPos(extra) {
+    var o = {};
+    for (var k = 0; k < 6; k++) {
+      var a = (90 + 60 * k) * Math.PI / 180;
+      o['C' + (k + 1)] = [1.39 * Math.cos(a), 1.39 * Math.sin(a), 0];
+      o['H' + (k + 1)] = [2.48 * Math.cos(a), 2.48 * Math.sin(a), 0];
+    }
+    Object.keys(extra).forEach(function (key) { o[key] = extra[key]; });
+    return o;
+  }
+  var RING_ATOMS = [];
+  for (var k = 1; k <= 6; k++) RING_ATOMS.push({ id: 'C' + k, el: 'C', label: 'C' });
+  for (k = 1; k <= 6; k++) RING_ATOMS.push({ id: 'H' + k, el: 'H', label: 'H' });
+  var CH = [1, 2, 3, 4, 5, 6].map(function (k) { return ['C' + k, 'H' + k, 1]; });
+  // Kekulé structure: alternating single and double bonds.
+  var KEKULE = [['C1', 'C2', 2], ['C2', 'C3', 1], ['C3', 'C4', 2], ['C4', 'C5', 1], ['C5', 'C6', 2], ['C6', 'C1', 1]];
+  // Arenium ion: C1 is sp3, the + charge is spread over C2, C4, C6.
+  var ARENIUM = [['C1', 'C2', 1], ['C2', 'C3', 2], ['C3', 'C4', 1], ['C4', 'C5', 2], ['C5', 'C6', 1], ['C6', 'C1', 1]];
+  var RING_CH = CH.filter(function (b) { return b[1] !== 'H1'; });
+
+  var SEAR = {
+    key: 'sear', label: 'SEAr',
+    atoms: RING_ATOMS.concat([
+      { id: 'Me', el: 'R', label: 'CH₃' },
+      { id: 'Cl', el: 'Cl', label: 'Cl' },
+      { id: 'Al', el: 'Al', label: 'AlCl₃' }
+    ]),
+    view: [0.25, -0.3],
+    profile: [[0, 0.62], [0.32, 0.1], [0.5, 0.36], [0.62, 0.28], [1, 0.72]],
+    marks: [{ t: 0, k: 'reactants' }, { t: 0.32, k: 'ts1' }, { t: 0.5, k: 'arenium' }, { t: 0.62, k: 'ts2' }, { t: 1, k: 'products' }],
+    frames: [
+      { pos: ringPos({ Me: [2.2, 3.4, 0], Cl: [3.4, 3.9, 0], Al: [4.9, 3.4, 0] }),
+        bonds: KEKULE.concat(CH, [['Me', 'Cl', 1]]), t: 0, step: 'sear.0' },
+      { pos: ringPos({ Me: [2.2, 3.4, 0], Cl: [3.4, 3.9, 0], Al: [4.5, 3.6, 0] }),
+        bonds: KEKULE.concat(CH, [['Me', 'Cl', 1]]), t: 0.08, step: 'sear.1',
+        arrows: [{ from: 'Cl', to: 'Al' }] },
+      { pos: ringPos({ Me: [1.0, 3.5, 0], Cl: [3.4, 4.1, 0], Al: [4.5, 3.6, 0] }),
+        bonds: KEKULE.concat(CH, [['Cl', 'Al', 1]]), charges: { Me: '+', Al: '−' }, labels: { Al: 'AlCl₃' }, t: 0.18, step: 'sear.2' },
+      { pos: ringPos({ Me: [0.4, 3.0, 0], Cl: [3.4, 4.1, 0], Al: [4.5, 3.6, 0] }),
+        bonds: KEKULE.concat(CH, [['Cl', 'Al', 1]]), charges: { Me: '+', Al: '−' }, t: 0.25, step: 'sear.3',
+        arrows: [{ from: ['C1', 'C2'], to: 'Me' }] },
+      { pos: ringPos({ C1: [0, 1.5, 0], H1: [-0.75, 2.35, 0.75], Me: [0.75, 2.45, -0.75], Cl: [2.4, 3.9, 0], Al: [3.4, 4.5, 0] }),
+        bonds: ARENIUM.concat(RING_CH, [['C1', 'H1', 1], ['C1', 'Me', 1], ['Cl', 'Al', 1]]), charges: { C2: '+', Al: '−' }, t: 0.5, step: 'sear.4', ts: false },
+      { pos: ringPos({ C1: [0, 1.5, 0], H1: [-0.75, 2.35, 0.75], Me: [0.75, 2.45, -0.75], Cl: [-1.7, 3.5, 0.9], Al: [-2.6, 4.3, 1.1] }),
+        bonds: ARENIUM.concat(RING_CH, [['C1', 'H1', 1], ['C1', 'Me', 1], ['Cl', 'Al', 1]]), charges: { C2: '+', Al: '−' }, t: 0.58, step: 'sear.5',
+        arrows: [{ from: 'Cl', to: 'H1' }, { from: ['C1', 'H1'], to: ['C1', 'C2'] }] },
+      { pos: ringPos({ Me: [0, 2.9, 0], H1: [-2.0, 3.5, 0], Cl: [-3.25, 3.9, 0], Al: [-3.6, 5.2, 0] }),
+        bonds: KEKULE.concat(RING_CH, [['C1', 'Me', 1], ['H1', 'Cl', 1]]), t: 1, step: 'sear.6' }
+    ]
+  };
+
+  var data = { list: [SN2, SN1, E2, E1, SEAR], substrates: SUBSTRATES };
   if (typeof module !== 'undefined' && module.exports) module.exports = data;
   else root.MECHANISMS = data;
 })(this);

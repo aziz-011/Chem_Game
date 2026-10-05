@@ -190,6 +190,7 @@
     out.steps.push({ key: 'step.sear.2', vars: v });
     out.steps.push({ key: reagent.hx ? 'step.sear.3' : 'step.sear.3.so3', vars: v, cat: 'regen' });
     if (sub.director !== 'none') out.steps.push({ key: sub.director === 'meta' ? 'step.sear.meta' : 'step.sear.op', vars: v });
+    out.animate = 'sear';
     return out;
   }
 

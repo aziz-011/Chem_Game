@@ -18,7 +18,17 @@
       'mech.warn.sn1': 'Methyl and primary carbocations are too unstable, so these substrates do not react by SN1. Try SN2.',
       'mech.energy': 'Energy', 'mech.progress': 'Reaction progress',
       'mech.mark.reactants': 'Reactants', 'mech.mark.products': 'Products', 'mech.mark.ts': 'TS ‡', 'mech.mark.ts1': 'TS1 ‡',
-      'mech.mark.ts2': 'TS2 ‡', 'mech.mark.intermediate': 'Carbocation',
+      'mech.mark.ts2': 'TS2 ‡', 'mech.mark.intermediate': 'Carbocation', 'mech.mark.arenium': 'Arenium ion',
+      'mech.sear.full': 'Electrophilic aromatic substitution (Friedel–Crafts methylation)',
+      'sear.0': 'Start: benzene, chloromethane (CH₃Cl) and a small amount of the catalyst AlCl₃. On its own, CH₃Cl is not reactive enough to attack the very stable benzene ring.',
+      'sear.1': 'Catalyst enters: a lone pair on Cl bonds to the aluminum of AlCl₃ (a Lewis acid, it accepts electron pairs).',
+      'sear.2': 'The C–Cl bond breaks. This gives the electrophile CH₃⁺ and the ion AlCl₄⁻.',
+      'sear.3': 'Two π electrons of the ring attack CH₃⁺.',
+      'sear.4': 'Arenium ion (σ-complex): C1 now carries both H and CH₃, the ring has lost its aromaticity and has a + charge. This is the slow step.',
+      'sear.5': 'AlCl₄⁻ uses a Cl to remove the H⁺ from C1. The C–H electrons go back into the ring.',
+      'sear.6': 'Product: toluene (methylbenzene), with an aromatic ring again, plus HCl. AlCl₃ is regenerated unchanged, ready to activate the next CH₃Cl.',
+      'sear.rate': 'rate = k [arene][E⁺]', 'sear.steps': '2 (arenium ion intermediate) + catalyst activation', 'sear.substrate': 'electron-rich rings (benzene, toluene, anisole)',
+      'sear.reagent': 'electrophile made by a catalyst (CH₃Cl + AlCl₃, Br₂ + FeBr₃)', 'sear.solvent': 'dry, non-polar (no water: it destroys AlCl₃)', 'sear.stereo': 'flat ring: no stereochemistry; position set by directing groups',
 
       'sn2.0': 'Start: the hydroxide ion (OH⁻) is the nucleophile. It has a lone pair and a negative charge, and it is attracted to the slightly positive carbon bonded to bromine.',
       'sn2.1': 'OH⁻ attacks the carbon from the back, exactly opposite the bromine (180°). At the same moment, the C–Br bond starts to break.',
@@ -81,7 +91,17 @@
       'mech.warn.sn1': 'Les carbocations méthyle et primaires sont trop instables : ces substrats ne réagissent pas par SN1. Essaie la SN2.',
       'mech.energy': 'Énergie', 'mech.progress': 'Avancement de la réaction',
       'mech.mark.reactants': 'Réactifs', 'mech.mark.products': 'Produits', 'mech.mark.ts': 'ET ‡', 'mech.mark.ts1': 'ET1 ‡',
-      'mech.mark.ts2': 'ET2 ‡', 'mech.mark.intermediate': 'Carbocation',
+      'mech.mark.ts2': 'ET2 ‡', 'mech.mark.intermediate': 'Carbocation', 'mech.mark.arenium': 'Ion arénium',
+      'mech.sear.full': 'Substitution électrophile aromatique (méthylation de Friedel–Crafts)',
+      'sear.0': 'Départ : benzène, chlorométhane (CH₃Cl) et un peu de catalyseur AlCl₃. Seul, CH₃Cl n’est pas assez réactif pour attaquer le cycle benzénique très stable.',
+      'sear.1': 'Le catalyseur entre : un doublet libre du Cl se lie à l’aluminium de AlCl₃ (un acide de Lewis, il accepte des doublets d’électrons).',
+      'sear.2': 'La liaison C–Cl se rompt. On obtient l’électrophile CH₃⁺ et l’ion AlCl₄⁻.',
+      'sear.3': 'Deux électrons π du cycle attaquent CH₃⁺.',
+      'sear.4': 'Ion arénium (complexe σ) : C1 porte à la fois H et CH₃, le cycle a perdu son aromaticité et porte une charge +. C’est l’étape lente.',
+      'sear.5': 'AlCl₄⁻ utilise un Cl pour arracher le H⁺ de C1. Les électrons C–H retournent dans le cycle.',
+      'sear.6': 'Produit : toluène (méthylbenzène), de nouveau aromatique, et HCl. AlCl₃ est régénéré intact, prêt à activer le CH₃Cl suivant.',
+      'sear.rate': 'v = k [arène][E⁺]', 'sear.steps': '2 (intermédiaire ion arénium) + activation par le catalyseur', 'sear.substrate': 'cycles riches en électrons (benzène, toluène, anisole)',
+      'sear.reagent': 'électrophile formé par un catalyseur (CH₃Cl + AlCl₃, Br₂ + FeBr₃)', 'sear.solvent': 'anhydre, apolaire (l’eau détruit AlCl₃)', 'sear.stereo': 'cycle plan : pas de stéréochimie ; position fixée par les groupes orienteurs',
 
       'sn2.0': 'Départ : l’ion hydroxyde (OH⁻) est le nucléophile. Il a un doublet libre et une charge négative, et il est attiré par le carbone légèrement positif lié au brome.',
       'sn2.1': 'OH⁻ attaque le carbone par l’arrière, exactement à l’opposé du brome (180°). Au même moment, la liaison C–Br commence à se rompre.',
@@ -141,7 +161,9 @@
     H: { color: '#f4f4f4', r: 0.27, text: '#1c2233' },
     O: { color: '#e53935', r: 0.44, text: '#ffffff' },
     Br: { color: '#a52a2a', r: 0.52, text: '#ffffff' },
-    R: { color: '#9aa0ad', r: 0.42, text: '#1c2233' }
+    R: { color: '#9aa0ad', r: 0.42, text: '#1c2233' },
+    Cl: { color: '#2fae4a', r: 0.5, text: '#ffffff' },
+    Al: { color: '#b07a86', r: 0.62, text: '#ffffff' }
   };
 
   var state = { mech: M.list[0], substrate: 'secondary', frame: 0, playing: false, yaw: 0.6, pitch: -0.35, anim: null, pos: null };
@@ -408,6 +430,7 @@
       'rp.major': 'Major product', 'rp.minor': 'Minor product', 'rp.by': 'Also formed', 'rp.mechanism': 'Mechanism',
       'rp.why': 'Why', 'rp.workflow': 'Workflow, step by step', 'rp.watch': 'Watch the {m} animation',
       'rp.animNote': 'The animation uses Br as the leaving group and simple balls for CH₃ groups.',
+      'rp.animNote.sear': 'The animation shows benzene + CH₃⁺. Other electrophiles (Br⁺, Cl⁺, CH₃CO⁺, SO₃H⁺) and other rings follow exactly the same steps.',
       'rp.mm': '{f} · {m} g/mol',
       'rp.m.none': 'No reaction', 'rp.m.acidbase': 'Acid–base reaction', 'rp.m.slow': 'Very slow without a catalyst',
       'rp.m.fischer': 'Fischer esterification (acid-catalyzed)',
@@ -482,6 +505,7 @@
       'rp.major': 'Produit majoritaire', 'rp.minor': 'Produit minoritaire', 'rp.by': 'Se forme aussi', 'rp.mechanism': 'Mécanisme',
       'rp.why': 'Pourquoi', 'rp.workflow': 'Déroulement, étape par étape', 'rp.watch': 'Voir l’animation {m}',
       'rp.animNote': 'L’animation utilise Br comme groupe partant et des boules simples pour les groupes CH₃.',
+      'rp.animNote.sear': 'L’animation montre benzène + CH₃⁺. Les autres électrophiles (Br⁺, Cl⁺, CH₃CO⁺, SO₃H⁺) et les autres cycles suivent exactement les mêmes étapes.',
       'rp.mm': '{f} · {m} g/mol',
       'rp.m.none': 'Pas de réaction', 'rp.m.acidbase': 'Réaction acide–base', 'rp.m.slow': 'Très lente sans catalyseur',
       'rp.m.fischer': 'Estérification de Fischer (catalyse acide)',
@@ -567,6 +591,8 @@
     return { formula: Chem.hillKey(c), mass: Chem.molarMass(c) };
   }
 
+  function label(m) { return m.label || m.key.toUpperCase(); }
+
   function mechLabel(m) {
     if (/^(sn1|sn2|e1|e2)$/.test(m)) return m.toUpperCase() + ' — ' + t('mech.' + m + '.full');
     return t('rp.m.' + m);
@@ -609,6 +635,8 @@
       out.innerHTML = '';
       if (!r) return;
       var sub = r.substrate;
+      // Keep the animation below in step with the chosen reaction.
+      if (r.animate && els.stage) select(r.animate, /^sn/.test(r.animate) ? r.animClass : null);
       var heatUsed = heat.checked || r.reagent.type === 'acidCat' || r.mech === 'fischer';
 
       // Equation with conditions (and the catalyst) written over the arrow.
@@ -676,11 +704,11 @@
 
       if (r.animate) {
         out.appendChild(h('div', { class: 'row' }, [
-          h('button', { class: 'btn primary', type: 'button', text: t('rp.watch', { m: r.animate.toUpperCase() }), onclick: function () {
+          h('button', { class: 'btn primary', type: 'button', text: t('rp.watch', { m: label(M.list.filter(function (x) { return x.key === r.animate; })[0]) }), onclick: function () {
             select(r.animate, /^sn/.test(r.animate) ? r.animClass : null);
             els.stageWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
           } }),
-          h('span', { class: 'small muted', text: t('rp.animNote') })
+          h('span', { class: 'small muted', text: t(r.animate === 'sear' ? 'rp.animNote.sear' : 'rp.animNote') })
         ]));
       }
     }
@@ -735,15 +763,15 @@
     state.mech = M.list.filter(function (m) { return m.key === key; })[0];
     if (substrate) state.substrate = substrate;
     els.tabs.querySelectorAll('[data-mech]').forEach(function (b) { b.classList.toggle('active', b.dataset.mech === key); });
-    els.title.textContent = key.toUpperCase() + ' — ' + t('mech.' + key + '.full');
+    els.title.textContent = label(state.mech) + ' — ' + t('mech.' + key + '.full');
     var isSub = /^sn/.test(key);
     els.subRow.hidden = !isSub;
     els.subSel.value = state.substrate;
     state.pos = null; state.energyT = undefined;
     state.center = centroid(state.mech);
     SCALE = fitScale(state.mech, state.center);
-    state.yaw = isSub ? 0.6 : 0.35;
-    state.pitch = isSub ? -0.35 : -0.55;
+    state.yaw = state.mech.view ? state.mech.view[0] : isSub ? 0.6 : 0.35;
+    state.pitch = state.mech.view ? state.mech.view[1] : isSub ? -0.35 : -0.55;
     drawEnergy();
     renderFacts();
     renderWarning();
@@ -754,7 +782,7 @@
     var box = document.getElementById('mech-root');
     els.tabs = h('div', { class: 'subtabs' });
     M.list.forEach(function (m) {
-      els.tabs.appendChild(h('button', { class: 'chip', type: 'button', 'data-mech': m.key, text: m.key.toUpperCase(), onclick: function () { select(m.key); } }));
+      els.tabs.appendChild(h('button', { class: 'chip', type: 'button', 'data-mech': m.key, text: label(m), onclick: function () { select(m.key); } }));
     });
 
     els.subSel = h('select', { class: 'input', id: 'mech-substrate', onchange: function () { state.substrate = els.subSel.value; renderWarning(); draw(); } });
